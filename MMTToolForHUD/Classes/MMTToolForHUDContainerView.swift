@@ -19,6 +19,9 @@ final class MMTToolForHUDContainerView: UIView {
     let contentView = MMTToolForHUDContentView()
 
     private var hudMargin: CGFloat
+    /// Container bounds at the last layout pass; a change means the window
+    /// resized (rotation, scene change) and the panel should re-center.
+    private var lastLaidOutBounds = CGRect.null
 
     init(config: MMTToolForHUDConfig) {
         hudMargin = config.hudMargin
@@ -46,12 +49,19 @@ final class MMTToolForHUDContainerView: UIView {
         guard bounds.width > 0, bounds.height > 0 else { return }
         let maxWidth = min(bounds.width, bounds.height) - hudMargin * 2
         let size = contentView.preferredSize(maxWidth: maxWidth)
-        // Assign bounds + center instead of frame: show/hide animations scale
-        // contentView via transform, and assigning frame while a non-identity
-        // transform is applied makes UIKit derive bounds = frame / scale,
-        // which visually inflates the panel ("pop larger" glitch).
+        // Anchor the panel's top edge while its height changes so the
+        // indicator never shifts when text wraps to more (or fewer) lines;
+        // the panel grows downward instead. Re-center from scratch only
+        // when the container itself resized.
+        let anchorMinY: CGFloat
+        if lastLaidOutBounds != bounds || contentView.bounds.height == 0 {
+            anchorMinY = bounds.midY - size.height / 2
+        } else {
+            anchorMinY = contentView.frame.minY
+        }
+        lastLaidOutBounds = bounds
         contentView.bounds.size = size
-        contentView.center = CGPoint(x: bounds.midX, y: bounds.midY)
+        contentView.center = CGPoint(x: bounds.midX, y: anchorMinY + size.height / 2)
         contentView.setNeedsLayout()
     }
 

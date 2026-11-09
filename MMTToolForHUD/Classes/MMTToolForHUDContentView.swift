@@ -139,11 +139,7 @@ final class MMTToolForHUDContentView: UIView {
     func apply(mode: Mode, text: String?, progress: Float, animated: Bool) {
         self.mode = mode
         self.text = text?.isEmpty == true ? nil : text
-        if mode == .ring || mode == .bar {
-            self.progress = min(max(progress, 0), 1)
-        } else {
-            self.progress = 0
-        }
+        self.progress = (mode == .ring || mode == .bar) ? Self.sanitized(progress) : 0
 
         spinner.isHidden = mode != .spinner
         ringView.isHidden = mode != .ring
@@ -177,7 +173,7 @@ final class MMTToolForHUDContentView: UIView {
 
     /// Updates the progress (must currently be in ring / bar mode).
     func setProgress(_ value: Float, animated: Bool) {
-        progress = min(max(value, 0), 1)
+        progress = Self.sanitized(value)
         switch mode {
         case .ring:
             ringView.setProgress(progress, animated: animated)
@@ -211,36 +207,56 @@ final class MMTToolForHUDContentView: UIView {
         "\(Int((progress * 100).rounded()))%"
     }
 
+    /// Clamps to 0...1 and replaces NaN / infinite values with 0 so a bad
+    /// ratio (e.g. current/total with total == 0) can never crash the
+    /// percent conversion.
+    private static func sanitized(_ value: Float) -> Float {
+        guard value.isFinite else { return 0 }
+        return min(max(value, 0), 1)
+    }
+
     // MARK: - Sizing
 
     /// Computes the panel's preferred size for the given maximum width.
-    /// The width never shrinks below the high-water mark recorded during
-    /// this panel's lifetime.
+    /// Text is measured with the same width the label will render at, so
+    /// wrapped and explicit multi-line text size the panel correctly. The
+    /// width never shrinks below the high-water mark recorded during this
+    /// panel's lifetime.
     func preferredSize(maxWidth: CGFloat) -> CGSize {
         let available = max(maxWidth - padding * 2, 0)
-        var contentWidth: CGFloat = 0
-        var height = padding
 
+        var indicatorWidth: CGFloat = 0
+        var indicatorHeight: CGFloat = 0
         switch mode {
         case .spinner, .ring, .symbol:
-            contentWidth = iconArea
-            height += iconArea
+            indicatorWidth = iconArea
+            indicatorHeight = iconArea
         case .bar:
-            contentWidth = barSize.width
-            height += barSize.height
+            indicatorWidth = barSize.width
+            indicatorHeight = barSize.height
         }
 
+        var textAttributed: NSAttributedString?
         if !textLabel.isHidden, let raw = textLabel.text {
-            let attributed = NSAttributedString(string: raw, attributes: [.font: textLabel.font!])
-            let bounds = attributed.boundingRect(
-                with: CGSize(width: available, height: .greatestFiniteMagnitude),
+            textAttributed = NSAttributedString(string: raw, attributes: [.font: textLabel.font!])
+        }
+
+        func measure(_ attributed: NSAttributedString, _ width: CGFloat) -> CGRect {
+            attributed.boundingRect(
+                with: CGSize(width: width, height: .greatestFiniteMagnitude),
                 options: [.usesLineFragmentOrigin, .usesFontLeading],
                 context: nil)
-            contentWidth = max(contentWidth, ceil(bounds.width))
-            height += spacing + ceil(bounds.height)
         }
 
-        let naturalWidth = contentWidth + padding * 2
+        var textWidth: CGFloat = 0
+        var textHeight: CGFloat = 0
+        if let attributed = textAttributed {
+            let natural = measure(attributed, available)
+            textWidth = ceil(natural.width)
+            textHeight = ceil(natural.height)
+        }
+
+        let naturalWidth = max(indicatorWidth, textWidth) + padding * 2
         if maxWidth.isFinite {
             stickyMaxWidth = max(stickyMaxWidth, min(naturalWidth, maxWidth))
         }
@@ -248,7 +264,23 @@ final class MMTToolForHUDContentView: UIView {
             ? max(naturalWidth, min(stickyMaxWidth, maxWidth))
             : naturalWidth
 
-        return CGSize(width: width, height: height + padding)
+        // When the sticky width makes the panel wider than the measurement
+        // width, re-measure the text at the final inner width so wrapping
+        // matches what the label renders.
+        if let attributed = textAttributed {
+            let inner = width - padding * 2
+            if inner > available + 0.5 {
+                textHeight = ceil(measure(attributed, inner).height)
+            }
+        }
+
+        var height = padding + indicatorHeight
+        if textAttributed != nil {
+            height += spacing + max(textHeight, textLabel.font.lineHeight)
+        }
+        height += padding
+
+        return CGSize(width: width, height: height)
     }
 
     // MARK: - Layout
@@ -285,6 +317,12 @@ final class MMTToolForHUDContentView: UIView {
 
         if !textLabel.isHidden {
             y += spacing
+            // Give the label its real wrapping width so intrinsicContentSize
+            // reports the height the text actually renders at (explicit
+            // newlines and word wrapping both included).
+            if textLabel.preferredMaxLayoutWidth != contentWidth {
+                textLabel.preferredMaxLayoutWidth = contentWidth
+            }
             let textSize = textLabel.intrinsicContentSize
             let height = max(ceil(textSize.height), textLabel.font.lineHeight)
             // The label always spans the full content width and centers its

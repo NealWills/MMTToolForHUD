@@ -760,3 +760,87 @@ final class MMTToolForHUDReviewFixTests: XCTestCase {
         XCTAssertEqual(MMTToolForHUDToastManager.shared.pendingAutoRemoveCount, 0)
     }
 }
+
+// MARK: - Consumer-reported issues (0.6.1)
+
+final class MMTToolForHUDMultilineTests: XCTestCase {
+
+    private var window: UIWindow!
+
+    override func setUp() {
+        super.setUp()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window.makeKeyAndVisible()
+        MMTToolForHUD.updateConfig { $0.isAnimationEnabled = false }
+    }
+
+    override func tearDown() {
+        MMTToolForHUD.config = MMTToolForHUDConfig()
+        MMTToolForHUD.dismiss(in: window, animated: false)
+        window = nil
+        super.tearDown()
+    }
+
+    private var panel: MMTToolForHUDContentView? {
+        window.subviews.compactMap { $0 as? MMTToolForHUDContainerView }.first?.contentView
+    }
+
+    private var textLabel: UILabel? {
+        panel?.subviews.first { $0 is UILabel && !$0.isHidden } as? UILabel
+    }
+
+    private var barView: UIView? {
+        panel?.subviews.first { $0.accessibilityIdentifier == MMTToolForHUDAccessibilityID.progressBar }
+    }
+
+    /// Explicit "\n" text must render every line (consumer case:
+    /// "filedownload...\n(12345/67648654)").
+    func testExplicitNewlineTextRendersFullHeight() {
+        MMTToolForHUD.showProgress(0.5, text: "filedownload...\n(12345/67648654)", in: window)
+        window.layoutIfNeeded()
+
+        let lineHeight = MMTToolForHUD.config.textFont.lineHeight
+        XCTAssertGreaterThanOrEqual(textLabel?.frame.height ?? 0, lineHeight * 2 - 0.5,
+                                    "two explicit lines must be fully laid out")
+    }
+
+    /// Text that word-wraps (no explicit newline) must not be clipped:
+    /// the label height has to cover the wrapped lines.
+    func testWordWrappedTextIsNotClipped() {
+        let longText = "Downloading an update package that has a fairly long "
+            + "description so the text is forced to wrap onto multiple lines"
+        MMTToolForHUD.showLoading(longText, in: window)
+        window.layoutIfNeeded()
+
+        let lineHeight = MMTToolForHUD.config.textFont.lineHeight
+        XCTAssertGreaterThanOrEqual(textLabel?.frame.height ?? 0, lineHeight * 2 - 0.5,
+                                    "wrapped lines must be fully laid out")
+    }
+
+    /// NaN / infinite progress (e.g. current/total with total == 0) must be
+    /// treated as zero instead of crashing the percent conversion.
+    func testNonFiniteProgressIsSanitized() {
+        MMTToolForHUD.showProgress(.nan, in: window)
+        XCTAssertEqual(MMTToolForHUD.currentProgress ?? -1, 0.0, accuracy: 0.001)
+
+        MMTToolForHUD.updateProgress(.infinity, in: window)
+        XCTAssertEqual(MMTToolForHUD.currentProgress ?? -1, 0.0, accuracy: 0.001)
+
+        MMTToolForHUD.updateProgress(0.5, in: window)
+        XCTAssertEqual(MMTToolForHUD.currentProgress ?? -1, 0.5, accuracy: 0.001)
+    }
+
+    /// Growing the text to two lines must not move the progress indicator:
+    /// the panel is anchored at its top edge and grows downward.
+    func testIndicatorStaysPutWhenTextGrows() {
+        MMTToolForHUD.showProgress(0.5, text: "filedownload...", in: window)
+        window.layoutIfNeeded()
+        let before = try! XCTUnwrap(barView).frame.minY
+
+        MMTToolForHUD.updateProgress(0.6, text: "filedownload...\n(12345/67648654)", in: window)
+        window.layoutIfNeeded()
+
+        XCTAssertEqual(try! XCTUnwrap(barView).frame.minY, before, accuracy: 0.5,
+                       "indicator must not shift when text wraps to a second line")
+    }
+}
