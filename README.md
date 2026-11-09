@@ -24,9 +24,30 @@ fully customizable through a single `MMTToolForHUDConfig`.
 - [UI automation & Appium](#ui-automation--appium)
 - [Example app](#example-app)
 - [Testing](#testing)
+- [Documents & reports](#documents--reports)
 - [Contributing](#contributing)
 - [Author](#author)
 - [License](#license)
+
+## Documents & reports
+
+| Resource | Link |
+|---|---|
+| Latest performance report | [`perf-report-2026-11-09 14.31.43.md`](PerformanceReports/perf-report-2026-11-09%2014.31.43.md) |
+| Latest performance report (machine-readable) | [`perf-report-2026-11-09 14.31.43.json`](PerformanceReports/perf-report-2026-11-09%2014.31.43.json) |
+| All performance reports (history) | [`PerformanceReports/`](PerformanceReports) |
+| Latest performance test run log | [`last-run.log`](PerformanceReports/last-run.log) |
+| Unit + performance test suite | [`Example/Tests/Tests.swift`](Example/Tests/Tests.swift) |
+| Appium end-to-end guide | [`Appium/README.md`](Appium/README.md) |
+| Appium test spec | [`Appium/specs/hud.spec.js`](Appium/specs/hud.spec.js) |
+| Appium capabilities | [`Appium/wdio.conf.js`](Appium/wdio.conf.js) |
+| Example demo app source | [`Example/MMTToolForHUD/ViewController.swift`](Example/MMTToolForHUD/ViewController.swift) |
+| Performance runner script | [`scripts/run-performance-tests.sh`](scripts/run-performance-tests.sh) |
+| Podspec | [`MMTToolForHUD.podspec`](MMTToolForHUD.podspec) |
+| License | [`LICENSE`](LICENSE) |
+
+Performance reports are committed to the repository, so every run leaves a
+timestamped record under `PerformanceReports/` for historical comparison.
 
 ## Features
 
@@ -297,8 +318,9 @@ Example app controls use `MMTToolForHUD.demo.<section>.<name>`:
 
 ### Appium setup
 
-End-to-end tests live in [`Appium/`](Appium) using Appium 2 + WebDriverIO
-with the XCUITest driver:
+Appium (WebDriverIO) end-to-end tests live in [`Appium/`](Appium) using Appium 2 + WebDriverIO
+with the XCUITest driver — see the dedicated [`Appium/README.md`](Appium/README.md)
+for prerequisites, configuration and the coverage list:
 
 1. **Prerequisites**: Node 18+, Xcode with an iOS Simulator runtime, and the
    example app built and installed:
@@ -363,7 +385,8 @@ open MMTToolForHUD.xcworkspace
 
 ## Testing
 
-Unit tests (36 specs) run on the simulator:
+Unit tests (36 specs, see [`Example/Tests/Tests.swift`](Example/Tests/Tests.swift))
+run on the simulator:
 
 ```bash
 cd Example
@@ -374,9 +397,11 @@ xcodebuild test -workspace MMTToolForHUD.xcworkspace -scheme MMTToolForHUD-Examp
 ### Performance testing
 
 Automated benchmarks with budget assertions live in
-`MMTToolForHUDPerformanceTests`. One command runs them and writes JSON +
-Markdown reports into [`PerformanceReports/`](PerformanceReports) (reports
-are committed to the repository as history):
+[`MMTToolForHUDPerformanceTests`](Example/Tests/Tests.swift). One command
+runs them and writes JSON + Markdown reports into
+[`PerformanceReports/`](PerformanceReports) (reports are committed to the
+repository as history — see the
+[latest report](PerformanceReports/perf-report-2026-11-09%2014.31.43.md)):
 
 ```bash
 scripts/run-performance-tests.sh          # uses the booted simulator
@@ -385,8 +410,17 @@ scripts/run-performance-tests.sh "iPhone 16 Pro"   # or by name
 
 The report covers show/dismiss cycles, per-call `updateProgress` cost,
 text-measurement (`preferredSize`) cost, toast lifecycle cost and a memory
-stress pass, each asserted against a documented budget. XCTest-native
-`measure` baselines (`testShowDismissBaseline`,
+stress pass, each asserted against a documented budget. Latest results on
+an iPhone 16 Pro simulator (all PASS):
+
+| Benchmark | Average | Budget |
+|---|---:|---:|
+| showLoading + layout + dismiss | 0.668ms | 15ms |
+| updateProgress (per call) | 0.396ms | 2ms |
+| preferredSize with long text | 0.052ms | 1ms |
+| toast present + remove | 0.598ms | 5ms |
+
+XCTest-native `measure` baselines (`testShowDismissBaseline`,
 `testProgressUpdateBaseline`) are also available for Xcode's baseline
 curves.
 
