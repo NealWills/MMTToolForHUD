@@ -341,6 +341,28 @@ final class MMTToolForHUDTests: XCTestCase {
         wait(for: [reset], timeout: 5)
     }
 
+    func testTextStaysCenteredAcrossTextChanges() {
+        MMTToolForHUD.showLoading("Downloading 100%", in: window)
+        let centered = expectation(description: "label frame stays put")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            let panel = self.window.subviews
+                .compactMap { $0 as? MMTToolForHUDContainerView }
+                .first?.contentView
+            let textLabel = panel?.subviews.first { $0 is UILabel && !$0.isHidden } as? UILabel
+            let original = try! XCTUnwrap(textLabel).frame
+
+            // Shorter text on the same panel: the label frame must not move
+            // or resize; only the rendered text changes (centered in place).
+            MMTToolForHUD.showLoading("Done 100%", in: self.window)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                XCTAssertEqual(textLabel?.frame, original,
+                               "label must keep its frame so text stays centered")
+                centered.fulfill()
+            }
+        }
+        wait(for: [centered], timeout: 5)
+    }
+
     // MARK: - Content view sizing
 
     func testPreferredSizeSpinnerOnly() {

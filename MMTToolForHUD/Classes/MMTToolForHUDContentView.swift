@@ -283,11 +283,13 @@ final class MMTToolForHUDContentView: UIView {
         if !textLabel.isHidden {
             y += spacing
             let textSize = textLabel.intrinsicContentSize
-            let width = min(ceil(textSize.width), contentWidth)
             let height = max(ceil(textSize.height), textLabel.font.lineHeight)
-            textLabel.frame = CGRect(x: padding + (contentWidth - width) / 2,
+            // The label always spans the full content width and centers its
+            // text, so shorter text never shifts the frame — it stays put
+            // instead of animating from an off-center position.
+            textLabel.frame = CGRect(x: padding,
                                      y: y,
-                                     width: max(width, 1),
+                                     width: max(contentWidth, 1),
                                      height: max(height, 1))
             y += height
         }
