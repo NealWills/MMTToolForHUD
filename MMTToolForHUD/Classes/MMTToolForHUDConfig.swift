@@ -36,9 +36,15 @@ public struct MMTToolForHUDConfig {
     // MARK: - HUD colors & fonts
 
     /// HUD background color.
-    public var hudBackgroundColor = UIColor(white: 0.11, alpha: 0.82)
-    /// HUD tint color (spinner / progress / status icon).
+    public var hudBackgroundColor = UIColor(white: 0.06, alpha: 0.9)
+    /// Tint of the bar / ring progress indicator and its percent label.
     public var tintColor: UIColor = .white
+    /// Render color of the loading spinner.
+    public var spinnerColor: UIColor = .white
+    /// Render color of the success status icon.
+    public var successIconColor: UIColor = .systemGreen
+    /// Render color of the error status icon.
+    public var errorIconColor: UIColor = .systemRed
     /// HUD text color.
     public var textColor: UIColor = .white
     /// HUD text font.
@@ -70,7 +76,7 @@ public struct MMTToolForHUDConfig {
     /// Vertical spacing between stacked toasts.
     public var toastSpacing: CGFloat = 10
     /// Toast background color.
-    public var toastBackgroundColor = UIColor(white: 0.11, alpha: 0.88)
+    public var toastBackgroundColor = UIColor(white: 0.06, alpha: 0.92)
     /// Toast corner radius.
     public var toastCornerRadius: CGFloat = 8
     /// Toast text color.

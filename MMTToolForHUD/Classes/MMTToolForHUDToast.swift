@@ -73,18 +73,24 @@ public final class MMTToolForHUDToast {
         }
     }
 
-    /// Removes all visible toasts immediately (animated).
-    public static func dismissAll() {
+    /// Removes all visible toasts immediately (animated). Pass a window to
+    /// only clear the toasts on that window; nil clears every window.
+    public static func dismissAll(in window: UIWindow? = nil) {
         MMTToolForHUD.onMain {
-            MMTToolForHUDToastManager.shared.dismissAll()
+            MMTToolForHUDToastManager.shared.dismissAll(in: window)
         }
     }
 
     // MARK: - State / configuration
 
-    /// Whether any toast is currently visible.
+    /// Whether any toast is currently visible on any window.
     public static var isVisible: Bool {
-        MMTToolForHUDToastManager.shared.hasVisibleToast
+        MMTToolForHUDToastManager.shared.hasVisibleToast(in: nil)
+    }
+
+    /// Whether a toast is visible on the given window.
+    public static func isVisible(in window: UIWindow?) -> Bool {
+        MMTToolForHUDToastManager.shared.hasVisibleToast(in: window)
     }
 
     /// Alias of the global configuration; identical to `MMTToolForHUD.config`.
@@ -102,11 +108,25 @@ final class MMTToolForHUDToastManager {
 
     static let shared = MMTToolForHUDToastManager()
 
-    private var containers: [MMTToolForHUDToastPosition: MMTToolForHUDToastContainerView] = [:]
+    /// One container per (window, position); detached containers are purged
+    /// on access. Only the container attached to the target window is ever
+    /// touched.
+    private var containers: [MMTToolForHUDToastContainerView] = []
     private var autoRemoveWorkItems: [ObjectIdentifier: DispatchWorkItem] = [:]
 
-    var hasVisibleToast: Bool {
-        containers.values.contains { $0.stack.arrangedSubviews.isEmpty == false }
+    private func purgeDetachedContainers() {
+        containers.removeAll { $0.window == nil }
+    }
+
+    func hasVisibleToast(in window: UIWindow?) -> Bool {
+        purgeDetachedContainers()
+        let candidates: [MMTToolForHUDToastContainerView]
+        if let window {
+            candidates = containers.filter { $0.window === window }
+        } else {
+            candidates = containers
+        }
+        return candidates.contains { $0.stack.arrangedSubviews.isEmpty == false }
     }
 
     var config: MMTToolForHUDConfig { MMTToolForHUD.presenter.config }
@@ -176,9 +196,7 @@ final class MMTToolForHUDToastManager {
             item.removeFromSuperview()
             guard let self, let container, container.stack.arrangedSubviews.isEmpty else { return }
             container.removeFromSuperview()
-            if self.containers[container.position] === container {
-                self.containers[container.position] = nil
-            }
+            self.containers.removeAll { $0 === container }
         }
 
         if animated {
@@ -199,8 +217,15 @@ final class MMTToolForHUDToastManager {
         }
     }
 
-    func dismissAll() {
-        let items = containers.values
+    func dismissAll(in window: UIWindow?) {
+        purgeDetachedContainers()
+        let targets: [MMTToolForHUDToastContainerView]
+        if let window {
+            targets = containers.filter { $0.window === window }
+        } else {
+            targets = containers
+        }
+        let items = targets
             .flatMap { $0.stack.arrangedSubviews }
             .compactMap { $0 as? MMTToolForHUDToastItemView }
         for item in items {
@@ -213,13 +238,9 @@ final class MMTToolForHUDToastManager {
     private func ensureContainer(position: MMTToolForHUDToastPosition,
                                  in window: UIWindow,
                                  config: MMTToolForHUDConfig) -> MMTToolForHUDToastContainerView {
-        if let existing = containers[position] {
-            if existing.window === window {
-                return existing
-            }
-            // The target window changed; rebuild the container.
-            existing.removeFromSuperview()
-            containers[position] = nil
+        purgeDetachedContainers()
+        if let existing = containers.first(where: { $0.window === window && $0.position == position }) {
+            return existing
         }
 
         let container = MMTToolForHUDToastContainerView(position: position,
@@ -227,7 +248,7 @@ final class MMTToolForHUDToastManager {
                                                         spacing: config.toastSpacing)
         window.addSubview(container)
         container.pin(to: window)
-        containers[position] = container
+        containers.append(container)
         return container
     }
 }

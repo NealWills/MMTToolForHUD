@@ -114,8 +114,7 @@ final class MMTToolForHUDContentView: UIView {
         backgroundColor = config.hudBackgroundColor
         layer.cornerRadius = config.cornerRadius
         tintColor = config.tintColor
-        spinner.color = config.tintColor
-        symbolView.tintColor = config.tintColor
+        spinner.color = config.spinnerColor
         textLabel.textColor = config.textColor
         textLabel.font = config.textFont
         percentLabel.textColor = config.tintColor
@@ -159,7 +158,9 @@ final class MMTToolForHUDContentView: UIView {
                 .withConfiguration(UIImage.SymbolConfiguration(font: font))
             symbolView.image = image
             symbolView.isHidden = false
-            symbolView.accessibilityLabel = name == "checkmark.circle.fill" ? "Success" : "Error"
+            let isSuccess = name == "checkmark.circle.fill"
+            symbolView.tintColor = isSuccess ? config.successIconColor : config.errorIconColor
+            symbolView.accessibilityLabel = isSuccess ? "Success" : "Error"
         }
 
         reloadText()

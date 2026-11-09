@@ -11,6 +11,11 @@ final class MMTToolForHUDContainerView: UIView {
 
     var interactionStyle: MMTToolForHUDConfig.InteractionStyle = .blockHUD
 
+    /// Presentation state owned by the presenter (per window).
+    var isDismissing = false
+    var autoDismissWork: DispatchWorkItem?
+    var scheduledDismissWork: DispatchWorkItem?
+
     let contentView = MMTToolForHUDContentView()
 
     private let hudMargin: CGFloat

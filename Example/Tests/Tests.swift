@@ -22,7 +22,7 @@ final class MMTToolForHUDTests: XCTestCase {
     }
 
     override func tearDown() {
-        MMTToolForHUD.dismiss(animated: false)
+        MMTToolForHUD.dismiss(in: window, animated: false)
         MMTToolForHUDToast.dismissAll()
         window = nil
         super.tearDown()
@@ -37,6 +37,9 @@ final class MMTToolForHUDTests: XCTestCase {
         XCTAssertEqual(config.progressStyle, .bar)
         XCTAssertEqual(config.interactionStyle, .blockHUD)
         XCTAssertEqual(config.statusAutoDismissDelay, 1.6)
+        XCTAssertEqual(config.spinnerColor, .white)
+        XCTAssertEqual(config.successIconColor, .systemGreen)
+        XCTAssertEqual(config.errorIconColor, .systemRed)
     }
 
     func testConfigSharedBetweenHUDAndToast() {
@@ -52,20 +55,20 @@ final class MMTToolForHUDTests: XCTestCase {
         XCTAssertTrue(MMTToolForHUD.isVisible)
 
         let expectation = expectation(description: "dismissed")
-        MMTToolForHUD.dismiss { expectation.fulfill() }
+        MMTToolForHUD.dismiss(in: window) { expectation.fulfill() }
         wait(for: [expectation], timeout: 3)
         XCTAssertFalse(MMTToolForHUD.isVisible)
     }
 
     func testDismissWithoutAnimationImmediately() {
         MMTToolForHUD.showLoading(in: window)
-        MMTToolForHUD.dismiss(animated: false)
+        MMTToolForHUD.dismiss(in: window, animated: false)
         XCTAssertFalse(MMTToolForHUD.isVisible)
     }
 
     func testDismissAfterDelay() {
         MMTToolForHUD.showLoading(in: window)
-        MMTToolForHUD.dismiss(after: 0.3)
+        MMTToolForHUD.dismiss(after: 0.3, in: window)
         XCTAssertTrue(MMTToolForHUD.isVisible)
 
         let expectation = expectation(description: "delayed dismiss")
@@ -101,7 +104,7 @@ final class MMTToolForHUDTests: XCTestCase {
         MMTToolForHUD.showProgress(0.2, text: "Downloading", in: window)
         XCTAssertEqual(MMTToolForHUD.currentProgress ?? -1, 0.2, accuracy: 0.001)
 
-        MMTToolForHUD.updateProgress(0.75)
+        MMTToolForHUD.updateProgress(0.75, in: window)
         XCTAssertEqual(MMTToolForHUD.currentProgress ?? -1, 0.75, accuracy: 0.001)
     }
 
@@ -109,13 +112,13 @@ final class MMTToolForHUDTests: XCTestCase {
         MMTToolForHUD.showProgress(1.8, in: window)
         XCTAssertEqual(MMTToolForHUD.currentProgress ?? -1, 1.0, accuracy: 0.001)
 
-        MMTToolForHUD.updateProgress(-0.5)
+        MMTToolForHUD.updateProgress(-0.5, in: window)
         XCTAssertEqual(MMTToolForHUD.currentProgress ?? -1, 0.0, accuracy: 0.001)
     }
 
     func testProgressNilAfterDismiss() {
         MMTToolForHUD.showProgress(0.5, in: window)
-        MMTToolForHUD.dismiss(animated: false)
+        MMTToolForHUD.dismiss(in: window, animated: false)
         XCTAssertNil(MMTToolForHUD.currentProgress)
     }
 
@@ -191,14 +194,39 @@ final class MMTToolForHUDTests: XCTestCase {
         XCTAssertEqual(Set(containers.map { $0.position }), [.top, .bottom])
     }
 
-    func testToastContainerRebuiltWhenWindowChanges() {
+    func testToastContainersAreIndependentPerWindow() {
         let otherWindow = UIWindow(frame: UIScreen.main.bounds)
 
-        MMTToolForHUDToast.show("toast", duration: 5, in: window)
-        MMTToolForHUDToast.show("toast", duration: 5, in: otherWindow)
+        MMTToolForHUDToast.show("toast A", duration: 5, in: window)
+        MMTToolForHUDToast.show("toast B", duration: 5, in: otherWindow)
 
+        XCTAssertEqual(window.subviews.compactMap { $0 as? MMTToolForHUDToastContainerView }.count, 1)
+        XCTAssertEqual(otherWindow.subviews.compactMap { $0 as? MMTToolForHUDToastContainerView }.count, 1)
+
+        // Clearing one window leaves the other untouched.
+        MMTToolForHUDToast.dismissAll(in: window)
+        let expectation = expectation(description: "window A cleared")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { expectation.fulfill() }
+        wait(for: [expectation], timeout: 3)
         XCTAssertEqual(window.subviews.compactMap { $0 as? MMTToolForHUDToastContainerView }.count, 0)
         XCTAssertEqual(otherWindow.subviews.compactMap { $0 as? MMTToolForHUDToastContainerView }.count, 1)
+    }
+
+    func testHUDsOnSeparateWindowsAreIndependent() {
+        let otherWindow = UIWindow(frame: UIScreen.main.bounds)
+
+        MMTToolForHUD.showLoading("on window A", in: window)
+        MMTToolForHUD.showLoading("on window B", in: otherWindow)
+
+        XCTAssertTrue(MMTToolForHUD.isVisible(in: window))
+        XCTAssertTrue(MMTToolForHUD.isVisible(in: otherWindow))
+
+        MMTToolForHUD.dismiss(in: window, animated: false)
+        XCTAssertFalse(MMTToolForHUD.isVisible(in: window))
+        XCTAssertTrue(MMTToolForHUD.isVisible(in: otherWindow))
+
+        MMTToolForHUD.dismiss(in: otherWindow, animated: false)
+        XCTAssertFalse(MMTToolForHUD.isVisible)
     }
 
     // MARK: - Presenter state machine
@@ -210,7 +238,7 @@ final class MMTToolForHUDTests: XCTestCase {
 
     func testUpdateProgressIgnoredForSpinnerMode() {
         MMTToolForHUD.showLoading(in: window)
-        MMTToolForHUD.updateProgress(0.5)
+        MMTToolForHUD.updateProgress(0.5, in: window)
         XCTAssertNil(MMTToolForHUD.currentProgress)
     }
 
@@ -232,7 +260,7 @@ final class MMTToolForHUDTests: XCTestCase {
 
     func testDismissWhenNotVisibleStillCallsCompletion() {
         let expectation = expectation(description: "completion called")
-        MMTToolForHUD.dismiss { expectation.fulfill() }
+        MMTToolForHUD.dismiss(in: window) { expectation.fulfill() }
         wait(for: [expectation], timeout: 2)
     }
 
@@ -278,7 +306,7 @@ final class MMTToolForHUDTests: XCTestCase {
         // Mimic the demo flow: first button schedules a delayed dismiss,
         // second button re-shows before it fires, text removed.
         MMTToolForHUD.showLoading("Loading, please wait…", in: window)
-        MMTToolForHUD.dismiss(after: 2)
+        MMTToolForHUD.dismiss(after: 2, in: self.window)
 
         let shrunk = expectation(description: "panel shrinks after natural layout pass")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

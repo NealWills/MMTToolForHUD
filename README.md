@@ -82,8 +82,9 @@ MMTToolForHUD.showError("Failed")        // cross, auto-dismiss
 ```swift
 // Global; applies to HUDs and toasts presented afterwards.
 MMTToolForHUD.updateConfig {
-    $0.hudBackgroundColor = UIColor.systemBlue.withAlphaComponent(0.92)
-    $0.cornerRadius = 24
+    $0.spinnerColor = .systemOrange
+    $0.successIconColor = .systemGreen
+    $0.errorIconColor = .systemRed
     $0.interactionStyle = .blockAll  // .blockHUD / .blockAll / .passThrough
     $0.toastDuration = 3
     $0.toastPosition = .top
@@ -95,14 +96,32 @@ Frequently used options (see `MMTToolForHUDConfig` for the full list):
 
 | Option | Description | Default |
 |---|---|---|
-| `hudBackgroundColor` / `tintColor` / `textColor` | HUD colors | dark panel / white / white |
+| `hudBackgroundColor` / `textColor` | Panel background / text | near-black / white |
+| `tintColor` | Progress tint (bar, ring, percent label) | white |
+| `spinnerColor` / `successIconColor` / `errorIconColor` | Spinner and status icon render colors | white / green / red |
 | `interactionStyle` | Touch interception policy | `.blockHUD` (panel only) |
 | `statusAutoDismissDelay` | Success/error auto-dismiss delay | 1.6s |
 | `progressStyle` | Default progress style | `.bar` |
 | `toastDuration` / `toastPosition` / `toastMargin` | Toast duration / position / margin | 2s / `.bottom` / 20 |
 | `toastCornerRadius` | Toast corner radius | 8 |
-| `toastBackgroundColor` / `toastFont` | Toast appearance | dark capsule / 14pt medium |
+| `toastBackgroundColor` / `toastFont` | Toast appearance | near-black capsule / 14pt medium |
 | `isAnimationEnabled` / `animationDuration` | Animation toggle and duration | true / 0.25s |
+
+### Windows
+
+Every show / dismiss API takes an optional `in:` window (the front window by
+default) and only manages the content attached to that window, so multiple
+windows can display independent HUDs and toasts:
+
+```swift
+MMTToolForHUD.showLoading("Loading", in: someWindow)
+MMTToolForHUD.dismiss(in: someWindow)
+MMTToolForHUD.isVisible(in: someWindow)
+MMTToolForHUD.currentProgress(in: someWindow)
+
+MMTToolForHUDToast.show("Saved", in: someWindow)
+MMTToolForHUDToast.dismissAll(in: someWindow)   // nil clears every window
+```
 
 ## Example
 

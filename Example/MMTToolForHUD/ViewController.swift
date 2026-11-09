@@ -94,16 +94,17 @@ class ViewController: UIViewController {
         addButton("Ring progress · simulated download", id: "demo.progress.ring") { self.simulateProgress(style: .ring) }
 
         addSection("Custom configuration", id: "demo.section.config")
-        addButton("Blue rounded HUD", id: "demo.config.blue") {
+        addButton("Colored spinner & status icons", id: "demo.config.colors") {
             MMTToolForHUD.updateConfig {
-                $0.hudBackgroundColor = UIColor.systemBlue.withAlphaComponent(0.92)
-                $0.cornerRadius = 24
+                $0.spinnerColor = .systemOrange
+                $0.successIconColor = .systemGreen
+                $0.errorIconColor = .systemRed
             }
-            MMTToolForHUD.showLoading("Custom style")
-            MMTToolForHUD.dismiss(after: 1.5) {
-                MMTToolForHUD.updateConfig {
-                    $0.hudBackgroundColor = UIColor(white: 0.11, alpha: 0.82)
-                    $0.cornerRadius = 16
+            MMTToolForHUD.showLoading("Custom colors")
+            MMTToolForHUD.dismiss(after: 1.2) {
+                MMTToolForHUD.showSuccess("Success is green")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                    MMTToolForHUD.showError("Error is red")
                 }
             }
         }
