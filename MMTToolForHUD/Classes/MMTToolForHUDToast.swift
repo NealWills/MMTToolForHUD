@@ -182,7 +182,9 @@ final class MMTToolForHUDToastManager {
         }
 
         if animated {
-            let offset: CGFloat = container.position == .bottom ? -10 : 10
+            // Exit along the same axis the toast entered from:
+            // bottom toasts drop back down, top/center toasts slide back up.
+            let offset: CGFloat = container.position == .bottom ? 10 : -10
             UIView.animate(
                 withDuration: config.animationDuration,
                 delay: 0,
