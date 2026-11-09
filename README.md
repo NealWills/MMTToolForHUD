@@ -16,6 +16,9 @@ Built on iOS 13+ UIScene, thread-safe, zero third-party dependencies.
   touch interception
 - **Progress**: bar and ring styles, live updates, automatic percentage
 - **Status flash**: auto-dismissing success (checkmark) / error (cross)
+- **Sticky panel width**: while a HUD is visible its panel only grows — text
+  changes never shrink it (no jitter while e.g. progress text changes);
+  the next presentation starts from the natural width again
 - **Unified configuration**: a single `MMTToolForHUDConfig` customizes all
   colors, fonts, corner radius, animations and durations
 - **Thread-safe**: every API can be called from any thread

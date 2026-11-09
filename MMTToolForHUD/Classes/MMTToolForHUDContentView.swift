@@ -53,6 +53,10 @@ final class MMTToolForHUDContentView: UIView {
     }
 
     private var config = MMTToolForHUDConfig()
+    /// Width high-water mark: while this panel is alive its width never
+    /// shrinks on content updates, avoiding jitter when text changes
+    /// (e.g. "Downloading 45%" -> "Done 100%"). A fresh panel starts over.
+    private var stickyMaxWidth: CGFloat = 0
 
     // MARK: - Subviews
 
@@ -206,6 +210,8 @@ final class MMTToolForHUDContentView: UIView {
     // MARK: - Sizing
 
     /// Computes the panel's preferred size for the given maximum width.
+    /// The width never shrinks below the high-water mark recorded during
+    /// this panel's lifetime.
     func preferredSize(maxWidth: CGFloat) -> CGSize {
         let available = max(maxWidth - padding * 2, 0)
         var contentWidth: CGFloat = 0
@@ -230,7 +236,15 @@ final class MMTToolForHUDContentView: UIView {
             height += spacing + ceil(bounds.height)
         }
 
-        return CGSize(width: contentWidth + padding * 2, height: height + padding)
+        let naturalWidth = contentWidth + padding * 2
+        if maxWidth.isFinite {
+            stickyMaxWidth = max(stickyMaxWidth, min(naturalWidth, maxWidth))
+        }
+        let width = maxWidth.isFinite
+            ? max(naturalWidth, min(stickyMaxWidth, maxWidth))
+            : naturalWidth
+
+        return CGSize(width: width, height: height + padding)
     }
 
     // MARK: - Layout

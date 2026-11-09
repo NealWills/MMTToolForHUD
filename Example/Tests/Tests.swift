@@ -298,17 +298,12 @@ final class MMTToolForHUDTests: XCTestCase {
         XCTAssertNil(container.hitTest(container.contentView.center, with: nil))
     }
 
-    func testLoadingPanelResizesBothWaysOnReuse() {
-        MMTHUD_showLoadingPanelResizesBothWays()
-    }
-
-    private func MMTHUD_showLoadingPanelResizesBothWays() {
-        // Mimic the demo flow: first button schedules a delayed dismiss,
-        // second button re-shows before it fires, text removed.
-        MMTToolForHUD.showLoading("Loading, please wait…", in: window)
+    func testLoadingPanelWidthNeverShrinksWhileVisible() {
+        // First presentation: long text widens the panel.
+        MMTToolForHUD.showLoading("a considerably longer loading message", in: window)
         MMTToolForHUD.dismiss(after: 2, in: self.window)
 
-        let shrunk = expectation(description: "panel shrinks after natural layout pass")
+        let sticky = expectation(description: "width stays sticky")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             let panel = self.window.subviews
                 .compactMap { $0 as? MMTToolForHUDContainerView }
@@ -316,16 +311,34 @@ final class MMTToolForHUDTests: XCTestCase {
             let wide = panel?.bounds.width ?? 0
             XCTAssertGreaterThan(wide, 76, "long text should widen the panel")
 
-            // Second demo tap: replace with spinner-only text while visible.
+            // Same presentation, shorter text: width must not shrink.
+            MMTToolForHUD.showLoading("done", in: self.window)
             MMTToolForHUD.showLoading(nil, in: self.window)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                let narrow = panel?.bounds.width ?? 0
-                XCTAssertEqual(narrow, 76, accuracy: 1.0,
-                               "panel should shrink back to spinner-only size")
-                shrunk.fulfill()
+                XCTAssertEqual(panel?.bounds.width ?? 0, wide, accuracy: 1.0,
+                               "panel width must stay at its high-water mark")
+                sticky.fulfill()
             }
         }
-        wait(for: [shrunk], timeout: 5)
+        wait(for: [sticky], timeout: 5)
+    }
+
+    func testFreshPresentationResetsPanelWidth() {
+        MMTToolForHUD.showLoading("a considerably longer loading message", in: window)
+        let reset = expectation(description: "fresh panel starts narrow")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            MMTToolForHUD.dismiss(in: self.window, animated: false)
+            MMTToolForHUD.showLoading(nil, in: self.window)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                let panel = self.window.subviews
+                    .compactMap { $0 as? MMTToolForHUDContainerView }
+                    .first?.contentView
+                XCTAssertEqual(panel?.bounds.width ?? 0, 76, accuracy: 1.0,
+                               "a fresh panel should start from its natural width")
+                reset.fulfill()
+            }
+        }
+        wait(for: [reset], timeout: 5)
     }
 
     // MARK: - Content view sizing
