@@ -26,6 +26,8 @@ public struct MMTToolForHUDConfig {
     public var interactionStyle = InteractionStyle.blockHUD
     /// Corner radius of the HUD panel.
     public var cornerRadius: CGFloat = 16
+    /// Padding between the HUD panel edge and its content.
+    public var hudPadding: CGFloat = 16
     /// Minimum distance between the HUD panel and the screen edges.
     public var hudMargin: CGFloat = 28
 

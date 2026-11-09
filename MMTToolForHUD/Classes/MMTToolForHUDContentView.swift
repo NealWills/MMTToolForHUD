@@ -45,9 +45,9 @@ final class MMTToolForHUDContentView: UIView {
 
     // MARK: - Layout constants
 
-    private let padding: CGFloat = 22
-    private let spacing: CGFloat = 12
-    private var iconArea: CGFloat { 54 }
+    private var padding: CGFloat = 16
+    private let spacing: CGFloat = 10
+    private var iconArea: CGFloat { 44 }
     private var barSize: CGSize {
         CGSize(width: config.barProgressWidth, height: config.barProgressHeight)
     }
@@ -109,6 +109,7 @@ final class MMTToolForHUDContentView: UIView {
 
     func apply(config: MMTToolForHUDConfig) {
         self.config = config
+        padding = config.hudPadding
         backgroundColor = config.hudBackgroundColor
         layer.cornerRadius = config.cornerRadius
         tintColor = config.tintColor

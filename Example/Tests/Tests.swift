@@ -277,9 +277,9 @@ final class MMTToolForHUDTests: XCTestCase {
         contentView.apply(config: MMTToolForHUDConfig())
         contentView.apply(mode: .spinner, text: nil, progress: 0, animated: false)
         let size = contentView.preferredSize(maxWidth: 300)
-        // padding(22) * 2 + icon area(54)
-        XCTAssertEqual(size.width, 98, accuracy: 0.5)
-        XCTAssertEqual(size.height, 98, accuracy: 0.5)
+        // padding(16) * 2 + icon area(44)
+        XCTAssertEqual(size.width, 76, accuracy: 0.5)
+        XCTAssertEqual(size.height, 76, accuracy: 0.5)
     }
 
     func testPreferredSizeGrowsWithText() {
@@ -292,7 +292,7 @@ final class MMTToolForHUDTests: XCTestCase {
         contentView.apply(mode: .spinner, text: "Loading data", progress: 0, animated: false)
         let withText = contentView.preferredSize(maxWidth: 300)
 
-        XCTAssertEqual(withoutText.width, 98, accuracy: 0.5)
+        XCTAssertEqual(withoutText.width, 76, accuracy: 0.5)
         XCTAssertGreaterThan(withText.height, withoutText.height)
         XCTAssertGreaterThan(withText.width, withoutText.width)
     }
@@ -305,10 +305,10 @@ final class MMTToolForHUDTests: XCTestCase {
         contentView.apply(config: config)
         contentView.apply(mode: .bar, text: nil, progress: 0, animated: false)
         let size = contentView.preferredSize(maxWidth: 300)
-        // padding(22) * 2 + bar width(132); bar mode always adds a percent
+        // padding(16) * 2 + bar width(132); bar mode always adds a percent
         // text line below the bar, so the height exceeds bar + paddings.
-        XCTAssertEqual(size.width, 176, accuracy: 0.5)
-        XCTAssertGreaterThan(size.height, 49)
+        XCTAssertEqual(size.width, 164, accuracy: 0.5)
+        XCTAssertGreaterThan(size.height, 37)
     }
 
     // MARK: - Accessibility identifiers (Appium contract)
