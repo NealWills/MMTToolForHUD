@@ -169,6 +169,13 @@ final class MMTToolForHUDContentView: UIView {
 
         reloadText()
         setNeedsLayout()
+        // Snap the active indicator to a sensible frame immediately: a mode
+        // switch on a visible panel would otherwise animate the newly
+        // active indicator from CGRect.zero (top-left corner) to its final
+        // position inside the presenter's animated layout pass.
+        if bounds.width > 0 {
+            layoutContent()
+        }
     }
 
     /// Updates the progress (must currently be in ring / bar mode).
@@ -287,7 +294,15 @@ final class MMTToolForHUDContentView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        layoutContent()
+    }
+
+    /// Positions the mode's indicator and text inside the current bounds.
+    /// Called from layoutSubviews and directly on mode switches to seed
+    /// frames without animation.
+    private func layoutContent() {
         let contentWidth = bounds.width - padding * 2
+        guard contentWidth > 0 else { return }
         var y = padding
 
         func centeredInContent(_ size: CGSize) -> CGRect {

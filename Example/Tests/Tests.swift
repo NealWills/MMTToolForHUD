@@ -844,3 +844,69 @@ final class MMTToolForHUDMultilineTests: XCTestCase {
                        "indicator must not shift when text wraps to a second line")
     }
 }
+
+// MARK: - Mode-switch transition regression
+
+final class MMTToolForHUDModeSwitchTests: XCTestCase {
+
+    private var window: UIWindow!
+
+    override func setUp() {
+        super.setUp()
+        window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        window.makeKeyAndVisible()
+    }
+
+    override func tearDown() {
+        MMTToolForHUD.dismiss(in: window, animated: false)
+        window = nil
+        super.tearDown()
+    }
+
+    private var panel: MMTToolForHUDContentView? {
+        window.subviews.compactMap { $0 as? MMTToolForHUDContainerView }.first?.contentView
+    }
+
+    /// Switching a visible loading panel to progress must seed the newly
+    /// active indicator's frame synchronously: an animated layout pass
+    /// would otherwise fly the indicator in from the panel's top-left
+    /// corner (zero frame).
+    func testModeSwitchSeedsIndicatorFrameImmediately() {
+        MMTToolForHUD.showLoading("Loading, please wait…", in: window)
+        window.layoutIfNeeded()
+
+        MMTToolForHUD.showProgress(0, text: "Downloading", style: .ring, in: window)
+        // Check synchronously, before any animation could commit.
+        let ring = panel?.subviews
+            .first { $0.accessibilityIdentifier == MMTToolForHUDAccessibilityID.progressRing }
+        let ringFrame = try! XCTUnwrap(ring).frame
+        XCTAssertGreaterThan(ringFrame.width, 0, "ring frame must be seeded, not zero")
+        let inner = try! XCTUnwrap(panel).bounds
+        XCTAssertEqual(ringFrame.midX, inner.midX, accuracy: 1.5,
+                       "ring must start horizontally centered")
+        XCTAssertEqual(ringFrame.midY, MMTToolForHUD.config.hudPadding
+                       + 44 / 2, accuracy: 2.0,
+                       "ring must start in the indicator slot")
+
+        // Same contract for the bar indicator.
+        MMTToolForHUD.showProgress(0, text: "Downloading", style: .bar, in: window)
+        let bar = panel?.subviews
+            .first { $0.accessibilityIdentifier == MMTToolForHUDAccessibilityID.progressBar }
+        let barFrame = try! XCTUnwrap(bar).frame
+        XCTAssertGreaterThan(barFrame.width, 0)
+        XCTAssertEqual(barFrame.midX, try! XCTUnwrap(panel).bounds.midX, accuracy: 1.5)
+    }
+
+    /// The panel stays vertically centered through the loading -> progress
+    /// switch on a visible panel.
+    func testPanelStaysCenteredAcrossModeSwitch() {
+        MMTToolForHUD.showLoading("Loading, please wait…", in: window)
+        MMTToolForHUD.dismiss(after: 2, in: window)
+        window.layoutIfNeeded()
+
+        MMTToolForHUD.showProgress(0, text: "Downloading", style: .ring, in: window)
+        window.layoutIfNeeded()
+
+        XCTAssertEqual(try! XCTUnwrap(panel).frame.midY, window.bounds.midY, accuracy: 1.0)
+    }
+}
