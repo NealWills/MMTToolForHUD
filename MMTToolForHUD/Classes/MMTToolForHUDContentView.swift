@@ -265,7 +265,6 @@ final class MMTToolForHUDContentView: UIView {
             y += size.height
         case .ring:
             let side = config.ringProgressRadius * 2
-            let size = CGSize(width: side, height: side)
             ringView.frame = CGRect(x: padding + (contentWidth - side) / 2,
                                     y: y + (iconArea - side) / 2,
                                     width: side, height: side)
