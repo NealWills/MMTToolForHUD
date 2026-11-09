@@ -34,8 +34,8 @@ fully customizable through a single `MMTToolForHUDConfig`.
 
 | Resource | Link |
 |---|---|
-| Latest performance report | [`perf-report-2026-11-09 14.31.43.md`](PerformanceReports/perf-report-2026-11-09%2014.31.43.md) |
-| Latest performance report (machine-readable) | [`perf-report-2026-11-09 14.31.43.json`](PerformanceReports/perf-report-2026-11-09%2014.31.43.json) |
+| Latest performance report (tag 0.6.0) | [`perf-report-0.6.0.md`](PerformanceReports/perf-report-0.6.0.md) |
+| Latest performance report (machine-readable) | [`perf-report-0.6.0.json`](PerformanceReports/perf-report-0.6.0.json) |
 | All performance reports (history) | [`PerformanceReports/`](PerformanceReports) |
 | Latest performance test run log | [`last-run.log`](PerformanceReports/last-run.log) |
 | Unit + performance test suite | [`Example/Tests/Tests.swift`](Example/Tests/Tests.swift) |
@@ -47,8 +47,10 @@ fully customizable through a single `MMTToolForHUDConfig`.
 | Podspec | [`MMTToolForHUD.podspec`](MMTToolForHUD.podspec) |
 | License | [`LICENSE`](LICENSE) |
 
-Performance reports are committed to the repository, so every run leaves a
-timestamped record under `PerformanceReports/` for historical comparison.
+Performance reports are committed to the repository. The filename carries
+the version tag (`perf-report-<version>.md/.json`) and every run replaces
+the report for its version, so each tag keeps exactly one final report
+under `PerformanceReports/`.
 
 ## Features
 
@@ -412,7 +414,7 @@ Automated benchmarks with budget assertions live in
 runs them and writes JSON + Markdown reports into
 [`PerformanceReports/`](PerformanceReports) (reports are committed to the
 repository as history — see the
-[latest report](PerformanceReports/perf-report-2026-11-09%2014.31.43.md)):
+[latest report](PerformanceReports/perf-report-0.6.0.md)):
 
 ```bash
 scripts/run-performance-tests.sh          # uses the booted simulator

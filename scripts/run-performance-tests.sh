@@ -34,11 +34,20 @@ xcodebuild test \
   2>&1 | tee "$REPORT_DIR/last-run.log" | grep -E "Test Case|PERFORMANCE|error:|Executed|TEST (SUCCEEDED|FAILED)" || true
 
 echo
-STAMP=$(date "+%Y-%m-%d %H.%M.%S")
-python3 - "$REPORT_DIR/last-run.log" "$REPORT_DIR" "$STAMP" << 'EXTRACT'
+# One final report per version tag: the filename carries the podspec
+# version and each run overwrites the report for that version.
+VERSION=$(grep -E "^\s*s.version" MMTToolForHUD.podspec | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" | head -1)
+if [ -z "$VERSION" ]; then
+  echo "!! Could not read the version from MMTToolForHUD.podspec"
+  exit 1
+fi
+REPORT_BASE="perf-report-$VERSION"
+
+python3 - "$REPORT_DIR/last-run.log" "$REPORT_DIR" "$REPORT_BASE" << 'EXTRACT'
+import os
 import sys
 
-log_path, report_dir, stamp = sys.argv[1], sys.argv[2], sys.argv[3]
+log_path, report_dir, base = sys.argv[1], sys.argv[2], sys.argv[3]
 log = open(log_path, encoding="utf-8", errors="replace").read()
 
 begin = log.find("===== MMTToolForHUD PERFORMANCE-BEGIN =====")
@@ -51,14 +60,21 @@ if begin == -1 or json_marker == -1 or end == -1:
 markdown = log[begin + len("===== MMTToolForHUD PERFORMANCE-BEGIN ====="):json_marker].strip()
 payload = log[json_marker + len("===== MMTToolForHUD PERFORMANCE-JSON ====="):end].strip()
 
-md_path = "%s/perf-report-%s.md" % (report_dir, stamp)
-json_path = "%s/perf-report-%s.json" % (report_dir, stamp)
+md_path = os.path.join(report_dir, base + ".md")
+json_path = os.path.join(report_dir, base + ".json")
 open(md_path, "w", encoding="utf-8").write(markdown + "\n")
 open(json_path, "w", encoding="utf-8").write(payload + "\n")
-print("==> Report written:")
+
+# Drop superseded timestamped/older reports for this version.
+for name in os.listdir(report_dir):
+    if name.startswith("perf-report-") and not (name == base + ".md" or name == base + ".json"):
+        os.remove(os.path.join(report_dir, name))
+        print("    removed superseded %s" % name)
+
+print("==> Report written (one final report per version tag):")
 print("    %s" % md_path)
 print("    %s" % json_path)
 EXTRACT
 
 echo
-cat "$REPORT_DIR/perf-report-$STAMP.md"
+cat "$REPORT_DIR/$REPORT_BASE.md"
