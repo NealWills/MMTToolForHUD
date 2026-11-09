@@ -1,29 +1,45 @@
 # MMTToolForHUD
 
-[![CI Status](https://img.shields.io/travis/nealwills/MMTToolForHUD.svg?style=flat)](https://travis-ci.org/nealwills/MMTToolForHUD)
 [![Version](https://img.shields.io/cocoapods/v/MMTToolForHUD.svg?style=flat)](https://cocoapods.org/pods/MMTToolForHUD)
 [![License](https://img.shields.io/cocoapods/l/MMTToolForHUD.svg?style=flat)](https://cocoapods.org/pods/MMTToolForHUD)
 [![Platform](https://img.shields.io/cocoapods/p/MMTToolForHUD.svg?style=flat)](https://cocoapods.org/pods/MMTToolForHUD)
 
-A lightweight iOS HUD library supporting **toast, loading and progress**.
-Built on iOS 13+ UIScene, thread-safe, zero third-party dependencies.
+A lightweight, thread-safe HUD library for iOS 13+ with **toast**, **loading**
+and **progress** support. Zero third-party dependencies, built on UIScene,
+fully customizable through a single `MMTToolForHUDConfig`.
+
+## Contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Behavior notes](#behavior-notes)
+- [API reference](#api-reference)
+- [Configuration reference](#configuration-reference)
+- [UI automation & Appium](#ui-automation--appium)
+- [Example app](#example-app)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Author](#author)
+- [License](#license)
 
 ## Features
 
-- **Toast**: stackable, three positions (top / center / bottom), auto-dismiss,
-  success / error / info icons, long-text wrapping, never blocks touches
-- **Loading**: spinner with optional text, whole-screen or panel-only
-  touch interception
-- **Progress**: bar and ring styles, live updates, automatic percentage
-- **Status flash**: auto-dismissing success (checkmark) / error (cross)
-- **Sticky panel width**: while a HUD is visible its panel only grows — text
-  changes never shrink it (no jitter while e.g. progress text changes);
-  the next presentation starts from the natural width again
-- **Unified configuration**: a single `MMTToolForHUDConfig` customizes all
-  colors, fonts, corner radius, animations and durations
-- **Thread-safe**: every API can be called from any thread
-- **Window aware**: attaches to the key window of the active foreground
-  scene, or any window you specify
+- **Toast** — stackable capsules at the top, center or bottom; auto-dismiss;
+  success / error / info icons; long-text wrapping; never blocks touches
+- **Loading** — spinner with optional multi-line text; strictly modal or
+  panel-only touch interception
+- **Progress** — bar and ring styles, live updates with animated transitions
+  and an automatic percentage readout
+- **Status flash** — auto-dismissing success (checkmark) and error (cross)
+  icons
+- **Per-window management** — every show / dismiss call targets one window,
+  so multiple windows display fully independent HUDs and toasts
+- **Sticky panel width** — while a HUD is visible its panel only grows;
+  text changes never shrink it and the text always stays centered
+- **Thread-safe** — every API can be called from any thread
+- **Automatable** — stable accessibility identifiers for XCUITest / Appium
 
 ## Requirements
 
@@ -32,8 +48,8 @@ Built on iOS 13+ UIScene, thread-safe, zero third-party dependencies.
 
 ## Installation
 
-MMTToolForHUD is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+MMTToolForHUD is available through [CocoaPods](https://cocoapods.org). Add
+the following line to your Podfile:
 
 ```ruby
 pod 'MMTToolForHUD'
@@ -41,37 +57,53 @@ pod 'MMTToolForHUD'
 
 ## Quick start
 
-### Toast
+Import the module once:
 
 ```swift
 import MMTToolForHUD
+```
 
-MMTToolForHUDToast.show("A simple toast")               // bottom, auto-dismiss
+Every API below also accepts a trailing `in: UIWindow?` parameter to target
+a specific window (the front window by default). See
+[Behavior notes](#behavior-notes).
+
+### Toast
+
+```swift
+MMTToolForHUDToast.show("Saved")                        // bottom, auto-dismiss
 MMTToolForHUDToast.show("Top notice", position: .top)   // explicit position
-MMTToolForHUDToast.success("Saved")                     // green checkmark
+MMTToolForHUDToast.show("Centered", position: .center)
+MMTToolForHUDToast.success("Submitted successfully")    // green checkmark
 MMTToolForHUDToast.error("Network error")               // red cross
 MMTToolForHUDToast.info("Update available")             // blue info icon
 MMTToolForHUDToast.show("Stays 5s", duration: 5)        // custom duration
-MMTToolForHUDToast.dismissAll()                         // remove all now
+MMTToolForHUDToast.dismissAll()                         // clear every window
+MMTToolForHUDToast.dismissAll(in: someWindow)           // clear one window
 ```
+
+Toasts stack vertically at their position, wrap long text automatically and
+auto-dismiss in reverse order of appearance.
 
 ### Loading
 
 ```swift
-MMTToolForHUD.showLoading()                  // spinner only
-MMTToolForHUD.showLoading("Loading…")        // spinner + text
-MMTToolForHUD.dismiss()                      // dismiss manually
-MMTToolForHUD.dismiss(after: 2)              // auto-dismiss after 2s
+MMTToolForHUD.showLoading()                    // spinner only
+MMTToolForHUD.showLoading("Loading, please wait…")
+MMTToolForHUD.dismiss()                        // hide the front-window HUD
+MMTToolForHUD.dismiss(after: 2)                // auto-hide after 2 seconds
 ```
 
 ### Progress
 
 ```swift
-MMTToolForHUD.showProgress(0.0, text: "Downloading")             // bar (default)
-MMTToolForHUD.showProgress(0.0, text: "Downloading", style: .ring) // ring
-MMTToolForHUD.updateProgress(0.5)                                 // live update
-MMTToolForHUD.updateProgress(0.8, text: "Almost done")            // update text too
+MMTToolForHUD.showProgress(0.0, text: "Downloading")              // bar (default)
+MMTToolForHUD.showProgress(0.0, text: "Downloading", style: .ring)
+MMTToolForHUD.updateProgress(0.5)                                  // live update
+MMTToolForHUD.updateProgress(0.8, text: "Almost done")             // update text too
 ```
+
+Progress is clamped to `0.0...1.0`. The percentage is rendered automatically
+(in the ring center, or appended to the text for bars) and updates animate.
 
 ### Status flash
 
@@ -80,7 +112,7 @@ MMTToolForHUD.showSuccess("Submitted")   // checkmark, auto-dismiss (1.6s defaul
 MMTToolForHUD.showError("Failed")        // cross, auto-dismiss
 ```
 
-### Custom configuration
+### Configuration
 
 ```swift
 // Global; applies to HUDs and toasts presented afterwards.
@@ -88,71 +120,150 @@ MMTToolForHUD.updateConfig {
     $0.spinnerColor = .systemOrange
     $0.successIconColor = .systemGreen
     $0.errorIconColor = .systemRed
-    $0.interactionStyle = .blockAll  // .blockHUD / .blockAll / .passThrough
+    $0.interactionStyle = .blockAll     // .blockHUD / .blockAll / .passThrough
     $0.toastDuration = 3
     $0.toastPosition = .top
     $0.progressStyle = .ring
 }
+
+// or assign a whole value
+var config = MMTToolForHUDConfig()
+config.animationDuration = 0.35
+MMTToolForHUD.config = config
+MMTToolForHUDToast.config = config      // same underlying configuration
 ```
 
-Frequently used options (see `MMTToolForHUDConfig` for the full list):
+## Behavior notes
 
-| Option | Description | Default |
-|---|---|---|
-| `hudBackgroundColor` / `textColor` | Panel background / text | near-black / white |
-| `tintColor` | Progress tint (bar, ring, percent label) | white |
-| `spinnerColor` / `successIconColor` / `errorIconColor` | Spinner and status icon render colors | white / green / red |
-| `interactionStyle` | Touch interception policy | `.blockHUD` (panel only) |
-| `statusAutoDismissDelay` | Success/error auto-dismiss delay | 1.6s |
-| `progressStyle` | Default progress style | `.bar` |
-| `toastDuration` / `toastPosition` / `toastMargin` | Toast duration / position / margin | 2s / `.bottom` / 20 |
-| `toastCornerRadius` | Toast corner radius | 8 |
-| `toastBackgroundColor` / `toastFont` | Toast appearance | near-black capsule / 14pt medium |
-| `isAnimationEnabled` / `animationDuration` | Animation toggle and duration | true / 0.25s |
-
-### Windows
-
-Every show / dismiss API takes an optional `in:` window (the front window by
-default) and only manages the content attached to that window, so multiple
-windows can display independent HUDs and toasts:
+**Windows.** Every show / dismiss / query API takes an optional `in:`
+window (the front window by default) and only manages the content attached
+to that window. Showing a HUD on another window never disturbs the first
+one; `dismiss(in:)` only hides that window's HUD; toasts are stored per
+(window, position).
 
 ```swift
 MMTToolForHUD.showLoading("Loading", in: someWindow)
+MMTToolForHUD.updateProgress(0.4, in: someWindow)
+MMTToolForHUD.isVisible(in: someWindow)       // -> true
+MMTToolForHUD.currentProgress(in: someWindow) // -> 0.4
 MMTToolForHUD.dismiss(in: someWindow)
-MMTToolForHUD.isVisible(in: someWindow)
-MMTToolForHUD.currentProgress(in: someWindow)
-
-MMTToolForHUDToast.show("Saved", in: someWindow)
-MMTToolForHUDToast.dismissAll(in: someWindow)   // nil clears every window
 ```
 
-## Example
+**Content updates reuse the visible panel.** Calling any show API while a
+HUD is already visible on that window replaces its content in place — the
+spinner can become a progress bar or a success icon without re-animating
+the panel.
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+**Sticky panel width.** While a HUD is visible its panel only ever grows:
+shorter text keeps the wider panel so the layout never jitters (e.g.
+`"Downloading 45%"` → `"Done 100%"`). The text label spans the full panel
+and centers its content, so text always swaps in place. A fresh
+presentation starts from the natural width again.
 
-```bash
-cd Example
-pod install
-open MMTToolForHUD.xcworkspace
-```
+**Touch interception** (HUD only; toasts are always pass-through):
 
-The example app includes buttons demonstrating every feature: toasts in all
-positions with icons, modal loading, bar / ring progress with a simulated
-download, and custom theming.
+| Style | Behavior |
+|---|---|
+| `.blockHUD` (default) | Touches on the panel are swallowed; everything else passes through |
+| `.blockAll` | The whole screen blocks interaction (strictly modal loading) |
+| `.passThrough` | Nothing is blocked |
 
-## Tests
+**Thread safety.** All public APIs dispatch to the main thread when needed;
+call them freely from background queues.
 
-```bash
-cd Example
-xcodebuild test -workspace MMTToolForHUD.xcworkspace -scheme MMTToolForHUD-Example \
-  -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
-```
+**Auto-dismiss.** `showSuccess` / `showError` schedule a dismissal after
+`statusAutoDismissDelay` seconds. Any subsequent show call on the same
+window cancels that timer.
 
-## Automation & Appium identifiers
+## API reference
 
-All HUD, toast and demo controls expose stable accessibility identifiers so
-XCUITest and Appium can query them with the "accessibility id" strategy.
-Identifier format: `MMTToolForHUD.<area>.<element>[.<detail>]`.
+### MMTToolForHUD
+
+| API | Description |
+|---|---|
+| `showLoading(_:in:)` | Spinner with optional text |
+| `showProgress(_:text:style:in:)` | Bar or ring progress |
+| `updateProgress(_:text:in:)` | Update the visible progress (ignored when none is shown) |
+| `showSuccess(_:in:)` | Checkmark status, auto-dismisses |
+| `showError(_:in:)` | Cross status, auto-dismisses |
+| `dismiss(in:animated:completion:)` | Hide the HUD on a window |
+| `dismiss(after:in:animated:completion:)` | Hide after a delay |
+| `isVisible` / `isVisible(in:)` | Whether a HUD is showing (any / given window) |
+| `currentProgress` / `currentProgress(in:)` | Current progress, nil when not showing |
+| `config` / `updateConfig(_:)` | Global configuration |
+
+### MMTToolForHUDToast
+
+| API | Description |
+|---|---|
+| `show(_:duration:position:in:)` | Plain text toast |
+| `success(_:duration:position:in:)` | Green checkmark toast |
+| `error(_:duration:position:in:)` | Red cross toast |
+| `info(_:duration:position:in:)` | Blue info toast |
+| `dismissAll(in:)` | Clear toasts (`nil` clears every window) |
+| `isVisible` / `isVisible(in:)` | Whether a toast is showing |
+| `config` | Alias of `MMTToolForHUD.config` |
+
+## Configuration reference
+
+All options live on `MMTToolForHUDConfig` and apply to presentations made
+after the change.
+
+### General
+
+| Option | Description | Default |
+|---|---|---|
+| `isAnimationEnabled` | Enable show / hide animations | `true` |
+| `animationDuration` | Animation duration (seconds) | `0.25` |
+| `statusAutoDismissDelay` | Success / error auto-dismiss delay | `1.6` |
+| `interactionStyle` | Touch interception policy | `.blockHUD` |
+
+### HUD panel
+
+| Option | Description | Default |
+|---|---|---|
+| `hudBackgroundColor` | Panel background | near-black (0.06, 0.9) |
+| `textColor` / `textFont` | Text appearance | white / 14pt medium |
+| `cornerRadius` | Panel corner radius | `16` |
+| `hudPadding` | Padding between panel edge and content | `16` |
+| `hudTextSpacing` | Gap between indicator and text | `6` |
+| `hudMargin` | Minimum distance to screen edges | `28` |
+
+### Colors
+
+| Option | Description | Default |
+|---|---|---|
+| `spinnerColor` | Loading spinner render color | white |
+| `successIconColor` | Success icon render color | system green |
+| `errorIconColor` | Error icon render color | system red |
+| `tintColor` | Progress tint (bar, ring, percent label) | white |
+
+### Progress
+
+| Option | Description | Default |
+|---|---|---|
+| `progressStyle` | Style used when `showProgress` omits one | `.bar` |
+| `barProgressWidth` / `barProgressHeight` | Bar dimensions | `132` / `5` |
+| `ringProgressRadius` / `ringProgressLineWidth` | Ring dimensions | `21` / `4` |
+| `progressTrackColor` | Track color behind the fill | white 28% |
+
+### Toast
+
+| Option | Description | Default |
+|---|---|---|
+| `toastBackgroundColor` | Capsule background | near-black (0.06, 0.92) |
+| `toastTextColor` / `toastFont` | Text appearance | white / 14pt medium |
+| `toastCornerRadius` | Capsule corner radius | `8` |
+| `toastDuration` | Default duration (seconds) | `2.0` |
+| `toastPosition` | Default position | `.bottom` |
+| `toastMargin` | Distance to the safe-area edges | `20` |
+| `toastSpacing` | Gap between stacked toasts | `10` |
+
+## UI automation & Appium
+
+All HUD, toast and demo controls expose stable accessibility identifiers
+(queryable with the "accessibility id" strategy). Identifier format:
+`MMTToolForHUD.<area>.<element>[.<detail>]`.
 
 Library identifiers (defined in `MMTToolForHUDAccessibilityID`):
 
@@ -160,16 +271,15 @@ Library identifiers (defined in `MMTToolForHUDAccessibilityID`):
 |---|---|
 | `MMTToolForHUD.hud.panel` | The HUD panel container |
 | `MMTToolForHUD.hud.spinner` | Loading spinner |
-| `MMTToolForHUD.hud.progress.ring` | Ring progress (accessibility label = percent) |
-| `MMTToolForHUD.hud.progress.bar` | Bar progress (accessibility label = percent) |
+| `MMTToolForHUD.hud.progress.ring` | Ring progress (label = percent) |
+| `MMTToolForHUD.hud.progress.bar` | Bar progress (label = percent) |
 | `MMTToolForHUD.hud.status.icon` | Success / error icon (label = Success / Error) |
 | `MMTToolForHUD.hud.text` | HUD text label |
 | `MMTToolForHUD.toast.item` | Any toast view (label = toast text) |
 
-Example app buttons use `MMTToolForHUD.demo.<section>.<name>` identifiers
-(`MMTToolForHUD.demo.toast.bottom`, `MMTToolForHUD.demo.loading.text`,
-`MMTToolForHUD.demo.progress.ring`, …) and section headers use
-`MMTToolForHUD.demo.section.<name>`.
+Example app controls use `MMTToolForHUD.demo.<section>.<name>`
+(`MMTToolForHUD.demo.toast.bottom`, `MMTToolForHUD.demo.progress.ring`, …)
+and section headers use `MMTToolForHUD.demo.section.<name>`.
 
 Appium (WebDriverIO) end-to-end tests live in [`Appium/`](Appium):
 
@@ -178,6 +288,29 @@ cd Appium
 npm install
 npm run appium   # terminal 1: start the Appium server
 npm test         # terminal 2: run the suite against the booted simulator
+```
+
+## Example app
+
+The example app demonstrates every feature with one-tap buttons: toasts in
+all positions with icons, loading with and without text, modal loading,
+status flashes, bar / ring progress with a simulated download, and custom
+colors.
+
+```bash
+cd Example
+pod install
+open MMTToolForHUD.xcworkspace
+```
+
+## Testing
+
+Unit tests (36 specs) run on the simulator:
+
+```bash
+cd Example
+xcodebuild test -workspace MMTToolForHUD.xcworkspace -scheme MMTToolForHUD-Example \
+  -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
 ```
 
 ## Contributing
@@ -191,4 +324,5 @@ nealwills, nealwills93@gmail.com
 
 ## License
 
-MMTToolForHUD is available under the MIT license. See the LICENSE file for more info.
+MMTToolForHUD is available under the MIT license. See the [LICENSE](LICENSE)
+file for more info.
