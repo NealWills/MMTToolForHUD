@@ -173,6 +173,16 @@ final class MMTToolForHUDPresenter {
             if existing.window === targetWindow {
                 existing.apply(config: config)
                 existing.contentView.apply(mode: mode, text: text, progress: progress, animated: true)
+                // Animate the panel resize so width changes flow both ways.
+                existing.setNeedsLayout()
+                if config.isAnimationEnabled {
+                    UIView.animate(
+                        withDuration: config.animationDuration,
+                        delay: 0,
+                        options: [.allowUserInteraction, .curveEaseInOut]) {
+                        existing.layoutIfNeeded()
+                    }
+                }
                 scheduleAutoDismissIfNeeded(after: autoDismissAfter)
                 return
             }
@@ -216,8 +226,16 @@ final class MMTToolForHUDPresenter {
         } else {
             container.contentView.setProgress(progress, animated: true)
         }
-        // The text change may resize the panel.
+        // The text change may resize the panel; animate it both ways.
         container.setNeedsLayout()
+        if config.isAnimationEnabled {
+            UIView.animate(
+                withDuration: config.animationDuration,
+                delay: 0,
+                options: [.allowUserInteraction, .curveEaseInOut]) {
+                container.layoutIfNeeded()
+            }
+        }
     }
 
     // MARK: Dismissing

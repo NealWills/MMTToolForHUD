@@ -270,6 +270,36 @@ final class MMTToolForHUDTests: XCTestCase {
         XCTAssertNil(container.hitTest(container.contentView.center, with: nil))
     }
 
+    func testLoadingPanelResizesBothWaysOnReuse() {
+        MMTHUD_showLoadingPanelResizesBothWays()
+    }
+
+    private func MMTHUD_showLoadingPanelResizesBothWays() {
+        // Mimic the demo flow: first button schedules a delayed dismiss,
+        // second button re-shows before it fires, text removed.
+        MMTToolForHUD.showLoading("Loading, please wait…", in: window)
+        MMTToolForHUD.dismiss(after: 2)
+
+        let shrunk = expectation(description: "panel shrinks after natural layout pass")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            let panel = self.window.subviews
+                .compactMap { $0 as? MMTToolForHUDContainerView }
+                .first?.contentView
+            let wide = panel?.bounds.width ?? 0
+            XCTAssertGreaterThan(wide, 76, "long text should widen the panel")
+
+            // Second demo tap: replace with spinner-only text while visible.
+            MMTToolForHUD.showLoading(nil, in: self.window)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                let narrow = panel?.bounds.width ?? 0
+                XCTAssertEqual(narrow, 76, accuracy: 1.0,
+                               "panel should shrink back to spinner-only size")
+                shrunk.fulfill()
+            }
+        }
+        wait(for: [shrunk], timeout: 5)
+    }
+
     // MARK: - Content view sizing
 
     func testPreferredSizeSpinnerOnly() {
