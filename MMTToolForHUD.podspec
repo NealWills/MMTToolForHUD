@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'MMTToolForHUD'
-  s.version          = '0.6.1'
+  s.version          = '0.6.2'
   s.summary          = 'A lightweight, thread-safe HUD library for iOS 13+ supporting toast, loading and progress.'
 
   s.description      = <<-DESC

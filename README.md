@@ -34,8 +34,8 @@ fully customizable through a single `MMTToolForHUDConfig`.
 
 | Resource | Link |
 |---|---|
-| Latest performance report (tag 0.6.1) | [`perf-report-0.6.1.md`](PerformanceReports/perf-report-0.6.1.md) |
-| Latest performance report (machine-readable) | [`perf-report-0.6.1.json`](PerformanceReports/perf-report-0.6.1.json) |
+| Latest performance report (tag 0.6.2) | [`perf-report-0.6.2.md`](PerformanceReports/perf-report-0.6.2.md) |
+| Latest performance report (machine-readable) | [`perf-report-0.6.2.json`](PerformanceReports/perf-report-0.6.2.json) |
 | All performance reports (history) | [`PerformanceReports/`](PerformanceReports) |
 | Latest performance test run log | [`last-run.log`](PerformanceReports/last-run.log) |
 | Unit + performance test suite | [`Example/Tests/Tests.swift`](Example/Tests/Tests.swift) |
@@ -414,7 +414,7 @@ Automated benchmarks with budget assertions live in
 runs them and writes JSON + Markdown reports into
 [`PerformanceReports/`](PerformanceReports) (reports are committed to the
 repository as history — see the
-[latest report](PerformanceReports/perf-report-0.6.1.md)):
+[latest report](PerformanceReports/perf-report-0.6.2.md)):
 
 ```bash
 scripts/run-performance-tests.sh          # uses the booted simulator
