@@ -65,9 +65,10 @@ json_path = os.path.join(report_dir, base + ".json")
 open(md_path, "w", encoding="utf-8").write(markdown + "\n")
 open(json_path, "w", encoding="utf-8").write(payload + "\n")
 
-# Drop superseded timestamped/older reports for this version.
+# Drop superseded copies of THIS version only; other versions (other
+# tags) keep their final report.
 for name in os.listdir(report_dir):
-    if name.startswith("perf-report-") and not (name == base + ".md" or name == base + ".json"):
+    if name.startswith("perf-report-" + base) and name not in (base + ".md", base + ".json"):
         os.remove(os.path.join(report_dir, name))
         print("    removed superseded %s" % name)
 

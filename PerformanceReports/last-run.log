@@ -38,46 +38,46 @@ ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefaul
     cd /Users/nealwills/Developer/NLPod/MMTToolForHUD/Example
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -o /Users/nealwills/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F73-6cfe768891a92b912361537c460fe42b.sdkstatcache
 
-Test Suite 'Selected tests' started at 2026-11-09 15:19:25.323.
-Test Suite 'MMTToolForHUD_Tests.xctest' started at 2026-11-09 15:19:25.324.
-Test Suite 'MMTToolForHUDPerformanceTests' started at 2026-11-09 15:19:25.324.
+Test Suite 'Selected tests' started at 2026-11-09 15:21:48.232.
+Test Suite 'MMTToolForHUD_Tests.xctest' started at 2026-11-09 15:21:48.233.
+Test Suite 'MMTToolForHUDPerformanceTests' started at 2026-11-09 15:21:48.233.
 Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testPerformanceReport]' started.
 
 ===== MMTToolForHUD PERFORMANCE-BEGIN =====
 # MMTToolForHUD performance report
 
-Generated: 2026-11-09 15.19.25 · Device: arm64
+Generated: 2026-11-09 15.21.48 · Device: arm64
 
 | Benchmark | Iterations | Average | Max | Budget | Status |
 |---|---:|---:|---:|---:|---|
-| showLoading + layout + dismiss (per cycle) | 50 | 0.591ms | 1.154ms | 15.0ms | PASS |
-| updateProgress (per call) | 200 | 0.373ms | 0.902ms | 2.0ms | PASS |
-| preferredSize with long text (per call) | 500 | 0.049ms | 0.118ms | 1.0ms | PASS |
-| toast present + remove (per cycle) | 100 | 0.523ms | 0.839ms | 5.0ms | PASS |
+| showLoading + layout + dismiss (per cycle) | 50 | 0.567ms | 0.745ms | 15.0ms | PASS |
+| updateProgress (per call) | 200 | 0.369ms | 0.843ms | 2.0ms | PASS |
+| preferredSize with long text (per call) | 500 | 0.049ms | 0.146ms | 1.0ms | PASS |
+| toast present + remove (per cycle) | 100 | 0.527ms | 0.908ms | 5.0ms | PASS |
 
-Memory footprint delta after stress cycles: 3680 KB (informational, no budget).
+Memory footprint delta after stress cycles: 3744 KB (informational, no budget).
 ===== MMTToolForHUD PERFORMANCE-JSON =====
-{"memoryDeltaKb":3680,"device":"arm64","generatedAt":"2026-11-09 15.19.25","benchmarks":[{"maxMs":1.1539459228515625,"budgetMs":15,"averageMs":0.5907583236694336,"name":"showLoading + layout + dismiss (per cycle)","iterations":50},{"maxMs":0.9019374847412109,"budgetMs":2,"averageMs":0.3731900453567505,"name":"updateProgress (per call)","iterations":200},{"maxMs":0.11801719665527344,"budgetMs":1,"averageMs":0.049429893493652344,"name":"preferredSize with long text (per call)","iterations":500},{"maxMs":0.8389949798583984,"budgetMs":5,"averageMs":0.5233097076416016,"name":"toast present + remove (per cycle)","iterations":100}]}
+{"benchmarks":[{"averageMs":0.5665993690490723,"name":"showLoading + layout + dismiss (per cycle)","maxMs":0.7450580596923828,"iterations":50,"budgetMs":15},{"averageMs":0.36916017532348633,"name":"updateProgress (per call)","maxMs":0.8429288864135742,"iterations":200,"budgetMs":2},{"averageMs":0.049102067947387695,"name":"preferredSize with long text (per call)","maxMs":0.14603137969970703,"iterations":500,"budgetMs":1},{"averageMs":0.5266797542572021,"name":"toast present + remove (per cycle)","maxMs":0.9080171585083008,"iterations":100,"budgetMs":5}],"device":"arm64","memoryDeltaKb":3744,"generatedAt":"2026-11-09 15.21.48"}
 ===== MMTToolForHUD PERFORMANCE-END =====
-Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testPerformanceReport]' passed (0.588 seconds).
+Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testPerformanceReport]' passed (0.583 seconds).
 Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' started.
-<unknown>:0: Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' measured [Time, seconds] average: 0.014, relative standard deviation: 40.413%, values: [0.003884, 0.006427, 0.010064, 0.013975, 0.015370, 0.015868, 0.016822, 0.018118, 0.020458, 0.023905], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
-Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' passed (0.415 seconds).
+<unknown>:0: Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' measured [Time, seconds] average: 0.011, relative standard deviation: 62.802%, values: [0.001822, 0.003065, 0.004792, 0.007018, 0.009278, 0.011652, 0.014235, 0.017286, 0.020279, 0.023910], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
+Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' passed (0.382 seconds).
 Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' started.
-<unknown>:0: Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' measured [Time, seconds] average: 0.002, relative standard deviation: 34.918%, values: [0.003202, 0.001949, 0.001971, 0.002167, 0.001790, 0.001292, 0.001242, 0.001247, 0.001209, 0.001233], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
-Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' passed (0.286 seconds).
-Test Suite 'MMTToolForHUDPerformanceTests' passed at 2026-11-09 15:19:26.614.
-	 Executed 3 tests, with 0 failures (0 unexpected) in 1.288 (1.290) seconds
-Test Suite 'MMTToolForHUD_Tests.xctest' passed at 2026-11-09 15:19:26.615.
-	 Executed 3 tests, with 0 failures (0 unexpected) in 1.288 (1.291) seconds
-Test Suite 'Selected tests' passed at 2026-11-09 15:19:26.615.
-	 Executed 3 tests, with 0 failures (0 unexpected) in 1.288 (1.291) seconds
-2026-11-09 15:19:26.899 xcodebuild[99018:26719834] [MT] IDETestOperationsObserverDebug: 3.327 elapsed -- Testing started completed.
-2026-11-09 15:19:26.900 xcodebuild[99018:26719834] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
-2026-11-09 15:19:26.900 xcodebuild[99018:26719834] [MT] IDETestOperationsObserverDebug: 3.327 sec, +3.327 sec -- end
+<unknown>:0: Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' measured [Time, seconds] average: 0.002, relative standard deviation: 46.721%, values: [0.003617, 0.002598, 0.001670, 0.001348, 0.001283, 0.001243, 0.001206, 0.001191, 0.001181, 0.001212], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
+Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' passed (0.284 seconds).
+Test Suite 'MMTToolForHUDPerformanceTests' passed at 2026-11-09 15:21:49.484.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 1.249 (1.251) seconds
+Test Suite 'MMTToolForHUD_Tests.xctest' passed at 2026-11-09 15:21:49.484.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 1.249 (1.252) seconds
+Test Suite 'Selected tests' passed at 2026-11-09 15:21:49.484.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 1.249 (1.252) seconds
+2026-11-09 15:21:49.772 xcodebuild[4071:26727817] [MT] IDETestOperationsObserverDebug: 3.841 elapsed -- Testing started completed.
+2026-11-09 15:21:49.772 xcodebuild[4071:26727817] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-11-09 15:21:49.772 xcodebuild[4071:26727817] [MT] IDETestOperationsObserverDebug: 3.841 sec, +3.841 sec -- end
 
 Test session results, code coverage, and logs:
-	/Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Logs/Test/Test-MMTToolForHUD-Example-2026.11.09_15-19-22-+0800.xcresult
+	/Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Logs/Test/Test-MMTToolForHUD-Example-2026.11.09_15-21-45-+0800.xcresult
 
 ** TEST SUCCEEDED **
 
