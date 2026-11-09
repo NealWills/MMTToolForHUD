@@ -655,13 +655,17 @@ final class MMTToolForHUDPerformanceTests: XCTestCase {
         }
 
         // Informational memory stress: many full cycles must not grow the
-        // footprint (containers and work items must be released).
+        // footprint (containers and work items must be released). Each
+        // cycle drains its autorelease pool, matching how a real run loop
+        // would release temporary objects between events.
         let beforeKb = physFootprintKb()
         for _ in 0..<300 {
-            MMTToolForHUD.showLoading("stress", in: window)
-            MMTToolForHUD.dismiss(in: window, animated: false)
-            MMTToolForHUDToast.show("stress", duration: 60, in: window)
-            MMTToolForHUDToast.dismissAll()
+            autoreleasepool {
+                MMTToolForHUD.showLoading("stress", in: window)
+                MMTToolForHUD.dismiss(in: window, animated: false)
+                MMTToolForHUDToast.show("stress", duration: 60, in: window)
+                MMTToolForHUDToast.dismissAll()
+            }
         }
         let afterKb = physFootprintKb()
 

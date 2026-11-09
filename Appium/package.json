@@ -5,6 +5,7 @@
   "description": "Appium (WebDriverIO) end-to-end tests for the MMTToolForHUD example app",
   "scripts": {
     "appium": "appium",
+    "postinstall": "appium driver install xcuitest --quiet || appium driver update xcuitest --quiet || true",
     "test": "wdio run wdio.conf.js",
     "test:watch": "wdio run wdio.conf.js --watch"
   },

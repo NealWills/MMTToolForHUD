@@ -321,7 +321,9 @@ final class MMTToolForHUDPresenter {
                          animated: Bool,
                          completion: (() -> Void)?) {
         // Attach to the container when it exists so a new show on the same
-        // window cancels the pending dismissal; otherwise it is a no-op.
+        // window cancels the pending dismissal; otherwise the work fires on
+        // whatever HUD is on that window at deadline time (i.e. a show
+        // after scheduling is still dismissed when the delay elapses).
         let targetWindow = resolveWindow(window)
         let targetContainer = targetWindow.flatMap { self.container(for: $0) }
         targetContainer?.scheduledDismissWork?.cancel()

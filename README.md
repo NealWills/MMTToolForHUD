@@ -204,7 +204,12 @@ call them freely from background queues.
 
 **Auto-dismiss.** `showSuccess` / `showError` schedule a dismissal after
 `statusAutoDismissDelay` seconds. Any subsequent show call on the same
-window cancels that timer.
+window cancels that timer. `dismiss(after:)` targets whatever HUD is on
+the window when the delay elapses — including one shown after scheduling.
+
+**Keyboard.** HUDs and toasts do not avoid the keyboard; bottom toasts may
+be covered while a keyboard is visible. Position toasts at `.top` in
+keyboard-heavy screens if that matters.
 
 ## API reference
 
@@ -391,7 +396,7 @@ open MMTToolForHUD.xcworkspace
 
 ## Testing
 
-Unit tests (36 specs, see [`Example/Tests/Tests.swift`](Example/Tests/Tests.swift))
+Unit tests (39 specs, see [`Example/Tests/Tests.swift`](Example/Tests/Tests.swift))
 run on the simulator:
 
 ```bash

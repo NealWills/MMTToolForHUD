@@ -104,6 +104,9 @@ final class MMTToolForHUDContentView: UIView {
         percentLabel.isAccessibilityElement = false
         textLabel.accessibilityIdentifier = MMTToolForHUDAccessibilityID.text
 
+        // Apply the default configuration so fonts/colors are always set
+        // before any sizing call (preferredSize reads textLabel.font).
+        apply(config: config)
         apply(mode: .spinner, text: nil, progress: 0, animated: false)
     }
 
