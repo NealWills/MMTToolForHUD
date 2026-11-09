@@ -1,0 +1,28 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit-tests:
+    name: Unit and performance tests
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install CocoaPods dependencies
+        working-directory: Example
+        run: pod install
+
+      - name: Run tests
+        working-directory: Example
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace MMTToolForHUD.xcworkspace \
+            -scheme MMTToolForHUD-Example \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.2' \
+            | tail -40

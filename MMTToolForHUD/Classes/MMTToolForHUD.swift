@@ -30,8 +30,12 @@ public final class MMTToolForHUD {
     // MARK: - Configuration
 
     /// Global configuration; changes only apply to HUDs presented afterwards.
+    ///
+    /// - Note: this is a value type. Writing `MMTToolForHUD.config.someField = x`
+    ///   mutates a temporary copy and has no effect; use `updateConfig(_:)`
+    ///   or assign a complete value instead.
     public static var config: MMTToolForHUDConfig {
-        get { presenter.config }
+        get { onMainSync { presenter.config } }
         set { onMain { presenter.config = newValue } }
     }
 
@@ -86,7 +90,9 @@ public final class MMTToolForHUD {
     /// auto-dismisses after `config.statusAutoDismissDelay` seconds.
     public static func showSuccess(_ text: String? = nil, in window: UIWindow? = nil) {
         onMain {
-            presenter.show(mode: .symbol(name: "checkmark.circle.fill"),
+            presenter.show(mode: .symbol(name: "checkmark.circle.fill",
+                                         tint: presenter.config.successIconColor,
+                                         label: "Success"),
                            text: text, progress: 0, window: window,
                            autoDismissAfter: presenter.config.statusAutoDismissDelay)
         }
@@ -96,7 +102,9 @@ public final class MMTToolForHUD {
     /// after `config.statusAutoDismissDelay` seconds.
     public static func showError(_ text: String? = nil, in window: UIWindow? = nil) {
         onMain {
-            presenter.show(mode: .symbol(name: "xmark.circle.fill"),
+            presenter.show(mode: .symbol(name: "xmark.circle.fill",
+                                         tint: presenter.config.errorIconColor,
+                                         label: "Error"),
                            text: text, progress: 0, window: window,
                            autoDismissAfter: presenter.config.statusAutoDismissDelay)
         }
@@ -128,19 +136,19 @@ public final class MMTToolForHUD {
     // MARK: - State
 
     /// Whether a HUD is visible on any window.
-    public static var isVisible: Bool { presenter.hasVisibleHUD }
+    public static var isVisible: Bool { onMainSync { presenter.hasVisibleHUD } }
 
     /// Whether a HUD is visible on the given window (front window by default).
     public static func isVisible(in window: UIWindow? = nil) -> Bool {
-        presenter.isVisible(window: window)
+        onMainSync { presenter.isVisible(window: window) }
     }
 
     /// The progress of the visible HUD on any window, or nil.
-    public static var currentProgress: Float? { presenter.currentProgress(window: nil) }
+    public static var currentProgress: Float? { onMainSync { presenter.currentProgress(window: nil) } }
 
     /// The progress of the HUD on the given window, or nil.
     public static func currentProgress(in window: UIWindow? = nil) -> Float? {
-        presenter.currentProgress(window: window)
+        onMainSync { presenter.currentProgress(window: window) }
     }
 
     // MARK: - Utilities
@@ -151,6 +159,14 @@ public final class MMTToolForHUD {
         } else {
             DispatchQueue.main.async(execute: work)
         }
+    }
+
+    /// Reads main-thread-confined state safely from any thread.
+    static func onMainSync<T>(_ work: () -> T) -> T {
+        if Thread.isMainThread {
+            return work()
+        }
+        return DispatchQueue.main.sync(execute: work)
     }
 }
 

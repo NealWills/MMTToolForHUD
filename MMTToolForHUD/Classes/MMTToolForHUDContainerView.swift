@@ -18,7 +18,7 @@ final class MMTToolForHUDContainerView: UIView {
 
     let contentView = MMTToolForHUDContentView()
 
-    private let hudMargin: CGFloat
+    private var hudMargin: CGFloat
 
     init(config: MMTToolForHUDConfig) {
         hudMargin = config.hudMargin
@@ -36,6 +36,7 @@ final class MMTToolForHUDContainerView: UIView {
 
     func apply(config: MMTToolForHUDConfig) {
         interactionStyle = config.interactionStyle
+        hudMargin = config.hudMargin
         contentView.apply(config: config)
         setNeedsLayout()
     }
@@ -62,7 +63,15 @@ final class MMTToolForHUDContainerView: UIView {
         case .blockAll:
             return self
         case .blockHUD:
-            let hitArea = contentView.frame.insetBy(dx: -12, dy: -12)
+            // Derive the hit rect from bounds + center rather than frame:
+            // frame is distorted while a scale transform (show/hide
+            // animation) is applied, bounds is not.
+            let size = contentView.bounds.size
+            let center = contentView.center
+            let hitArea = CGRect(x: center.x - size.width / 2 - 12,
+                                 y: center.y - size.height / 2 - 12,
+                                 width: size.width + 24,
+                                 height: size.height + 24)
             return hitArea.contains(point) ? self : nil
         }
     }

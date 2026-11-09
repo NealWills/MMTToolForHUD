@@ -85,12 +85,12 @@ public final class MMTToolForHUDToast {
 
     /// Whether any toast is currently visible on any window.
     public static var isVisible: Bool {
-        MMTToolForHUDToastManager.shared.hasVisibleToast(in: nil)
+        MMTToolForHUD.onMainSync { MMTToolForHUDToastManager.shared.hasVisibleToast(in: nil) }
     }
 
     /// Whether a toast is visible on the given window.
     public static func isVisible(in window: UIWindow?) -> Bool {
-        MMTToolForHUDToastManager.shared.hasVisibleToast(in: window)
+        MMTToolForHUD.onMainSync { MMTToolForHUDToastManager.shared.hasVisibleToast(in: window) }
     }
 
     /// Alias of the global configuration; identical to `MMTToolForHUD.config`.
@@ -117,6 +117,9 @@ final class MMTToolForHUDToastManager {
     private func purgeDetachedContainers() {
         containers.removeAll { $0.window == nil }
     }
+
+    /// Pending auto-remove work items; used by tests to prove cleanup.
+    var pendingAutoRemoveCount: Int { autoRemoveWorkItems.count }
 
     func hasVisibleToast(in window: UIWindow?) -> Bool {
         purgeDetachedContainers()
@@ -180,13 +183,16 @@ final class MMTToolForHUDToastManager {
     // MARK: Removing
 
     func removeItem(_ item: MMTToolForHUDToastItemView, animated: Bool) {
-        guard item.superview != nil else { return }
-
+        // Cancel and drop the work-item bookkeeping first: the item may
+        // already be detached (e.g. its container was removed externally),
+        // in which case the guards below return early.
         let workKey = ObjectIdentifier(item)
         if let work = autoRemoveWorkItems[workKey] {
             work.cancel()
             autoRemoveWorkItems[workKey] = nil
         }
+
+        guard item.superview != nil else { return }
 
         guard let stack = item.superview as? UIStackView,
               let container = stack.superview as? MMTToolForHUDToastContainerView else { return }

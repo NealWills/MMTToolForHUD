@@ -688,3 +688,71 @@ final class MMTToolForHUDPerformanceTests: XCTestCase {
         MMTToolForHUD.dismiss(in: window, animated: false)
     }
 }
+
+// MARK: - Review fixes regression
+
+final class MMTToolForHUDReviewFixTests: XCTestCase {
+
+    private var window: UIWindow!
+
+    override func setUp() {
+        super.setUp()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window.makeKeyAndVisible()
+    }
+
+    override func tearDown() {
+        MMTToolForHUD.dismiss(in: window, animated: false)
+        MMTToolForHUDToast.dismissAll()
+        window = nil
+        super.tearDown()
+    }
+
+    /// Getters must be readable from background threads without racing
+    /// main-thread mutations.
+    func testGettersAreThreadSafe() {
+        let expectation = expectation(description: "background read")
+        DispatchQueue.global().async {
+            let config = MMTToolForHUD.config
+            XCTAssertGreaterThan(config.animationDuration, 0)
+            _ = MMTToolForHUD.isVisible
+            _ = MMTToolForHUD.currentProgress
+            _ = MMTToolForHUDToast.isVisible
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 3)
+    }
+
+    /// The status icon tint comes from the presentation payload, not from
+    /// string matching on the symbol name.
+    func testStatusIconTintMatchesConfiguration() {
+        MMTToolForHUD.updateConfig {
+            $0.successIconColor = .systemGreen
+            $0.errorIconColor = .systemRed
+        }
+        MMTToolForHUD.showSuccess("ok", in: window)
+        var panel = window.subviews.compactMap { $0 as? MMTToolForHUDContainerView }.first?.contentView
+        XCTAssertEqual(panel?.subviews.first { $0 is UIImageView && !$0.isHidden }?.tintColor, .systemGreen)
+
+        MMTToolForHUD.showError("bad", in: window)
+        panel = window.subviews.compactMap { $0 as? MMTToolForHUDContainerView }.first?.contentView
+        XCTAssertEqual(panel?.subviews.first { $0 is UIImageView && !$0.isHidden }?.tintColor, .systemRed)
+    }
+
+    /// Canceling the bookkeeping must happen even when the item was already
+    /// detached from its container (externally removed container).
+    func testAutoRemoveBookkeepingClearedForDetachedItems() {
+        MMTToolForHUDToast.show("detached", duration: 60, in: window)
+        let item = window.subviews
+            .compactMap { $0 as? MMTToolForHUDToastContainerView }
+            .flatMap { $0.stack.arrangedSubviews }
+            .compactMap { $0 as? MMTToolForHUDToastItemView }
+            .first
+        // Simulate an external removal of the whole container.
+        item?.superview?.superview?.removeFromSuperview()
+        if let item {
+            MMTToolForHUDToastManager.shared.removeItem(item, animated: false)
+        }
+        XCTAssertEqual(MMTToolForHUDToastManager.shared.pendingAutoRemoveCount, 0)
+    }
+}

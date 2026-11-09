@@ -4,6 +4,7 @@
 
 # MMTToolForHUD
 
+[![tests](https://github.com/NealWills/MMTToolForHUD/actions/workflows/tests.yml/badge.svg)](https://github.com/NealWills/MMTToolForHUD/actions/workflows/tests.yml)
 [![Version](https://img.shields.io/cocoapods/v/MMTToolForHUD.svg?style=flat)](https://cocoapods.org/pods/MMTToolForHUD)
 [![License](https://img.shields.io/cocoapods/l/MMTToolForHUD.svg?style=flat)](https://cocoapods.org/pods/MMTToolForHUD)
 [![Platform](https://img.shields.io/cocoapods/p/MMTToolForHUD.svg?style=flat)](https://cocoapods.org/pods/MMTToolForHUD)
@@ -157,6 +158,11 @@ config.animationDuration = 0.35
 MMTToolForHUD.config = config
 MMTToolForHUDToast.config = config      // same underlying configuration
 ```
+
+> **Pitfall:** `MMTToolForHUDConfig` is a value type, so
+> `MMTToolForHUD.config.animationDuration = 0.35` mutates a temporary copy
+> and has **no effect**. Always use `updateConfig { … }` or assign a
+> complete value as shown above.
 
 ## Behavior notes
 

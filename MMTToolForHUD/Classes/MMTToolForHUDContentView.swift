@@ -36,7 +36,7 @@ final class MMTToolForHUDContentView: UIView {
         case spinner
         case ring
         case bar
-        case symbol(name: String)
+        case symbol(name: String, tint: UIColor, label: String)
     }
 
     private(set) var mode: Mode = .spinner
@@ -93,6 +93,8 @@ final class MMTToolForHUDContentView: UIView {
         // Accessibility identifiers for UI automation (XCUITest / Appium).
         accessibilityIdentifier = MMTToolForHUDAccessibilityID.panel
         spinner.accessibilityIdentifier = MMTToolForHUDAccessibilityID.spinner
+        spinner.isAccessibilityElement = true
+        spinner.accessibilityLabel = "Loading"
         ringView.accessibilityIdentifier = MMTToolForHUDAccessibilityID.progressRing
         ringView.isAccessibilityElement = true
         barView.accessibilityIdentifier = MMTToolForHUDAccessibilityID.progressBar
@@ -156,15 +158,14 @@ final class MMTToolForHUDContentView: UIView {
         case .bar:
             barView.setProgress(self.progress, animated: animated)
             barView.accessibilityLabel = Self.percentText(self.progress)
-        case .symbol(let name):
+        case .symbol(let name, let tint, let label):
             let font = UIFont.systemFont(ofSize: 34, weight: .medium)
             let image = UIImage(systemName: name)?
                 .withConfiguration(UIImage.SymbolConfiguration(font: font))
             symbolView.image = image
             symbolView.isHidden = false
-            let isSuccess = name == "checkmark.circle.fill"
-            symbolView.tintColor = isSuccess ? config.successIconColor : config.errorIconColor
-            symbolView.accessibilityLabel = isSuccess ? "Success" : "Error"
+            symbolView.tintColor = tint
+            symbolView.accessibilityLabel = label
         }
 
         reloadText()
