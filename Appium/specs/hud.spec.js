@@ -1,14 +1,22 @@
 // End-to-end coverage for the MMTToolForHUD example app.
-// All selectors use the "accessibility id" strategy (`~identifier`); the
-// stable identifiers are defined by MMTToolForHUDAccessibilityID in the
-// library and the "demo.*" identifiers in the example app.
+// All selectors use the "accessibility id" strategy (`~identifier`), in the
+// MMTToolForHUD.<area>.<element> format defined by
+// MMTToolForHUDAccessibilityID in the library and the
+// MMTToolForHUD.demo.* identifiers in the example app.
 
 describe('MMTToolForHUD demo app', () => {
     const ids = {
-        toast: '~MMTToolForHUD.toast',
-        hudText: '~MMTToolForHUD.text',
-        progressBar: '~MMTToolForHUD.progress-bar',
-        progressRing: '~MMTToolForHUD.progress-ring',
+        toast: '~MMTToolForHUD.toast.item',
+        hudText: '~MMTToolForHUD.hud.text',
+        progressBar: '~MMTToolForHUD.hud.progress.bar',
+        progressRing: '~MMTToolForHUD.hud.progress.ring',
+        statusIcon: '~MMTToolForHUD.hud.status.icon',
+        toastBottomButton: '~MMTToolForHUD.demo.toast.bottom',
+        toastIconsButton: '~MMTToolForHUD.demo.toast.icons',
+        loadingTextButton: '~MMTToolForHUD.demo.loading.text',
+        successButton: '~MMTToolForHUD.demo.status.success',
+        progressBarButton: '~MMTToolForHUD.demo.progress.bar',
+        progressRingButton: '~MMTToolForHUD.demo.progress.ring',
     };
 
     beforeEach(async () => {
@@ -18,7 +26,7 @@ describe('MMTToolForHUD demo app', () => {
     });
 
     it('shows a toast that auto-dismisses', async () => {
-        await $('~demo.toast.bottom').click();
+        await $(ids.toastBottomButton).click();
         const toast = await $(ids.toast);
         await toast.waitForDisplayed({ timeout: 5000 });
         await expect(toast).toHaveText('This is a bottom toast');
@@ -30,14 +38,14 @@ describe('MMTToolForHUD demo app', () => {
     });
 
     it('stacks toasts from different demo buttons', async () => {
-        await $('~demo.toast.icons').click();
+        await $(ids.toastIconsButton).click();
         const toasts = await $$(ids.toast);
         await toasts[0].waitForDisplayed({ timeout: 5000 });
         expect(toasts.length).toBeGreaterThanOrEqual(3);
     });
 
     it('shows loading HUD with text and auto-dismisses it', async () => {
-        await $('~demo.loading.text').click();
+        await $(ids.loadingTextButton).click();
         const label = await $(ids.hudText);
         await label.waitForDisplayed({ timeout: 5000 });
         await expect(label).toHaveText('Loading, please wait…');
@@ -49,8 +57,8 @@ describe('MMTToolForHUD demo app', () => {
     });
 
     it('shows the success status icon and auto-dismisses', async () => {
-        await $('~demo.status.success').click();
-        const icon = await $('~MMTToolForHUD.status-icon');
+        await $(ids.successButton).click();
+        const icon = await $(ids.statusIcon);
         await icon.waitForDisplayed({ timeout: 5000 });
         await expect(icon).toHaveAttribute('label', 'Success');
         await icon.waitUntil(
@@ -60,7 +68,7 @@ describe('MMTToolForHUD demo app', () => {
     });
 
     it('runs bar progress to completion and shows a toast', async () => {
-        await $('~demo.progress.bar').click();
+        await $(ids.progressBarButton).click();
         const bar = await $(ids.progressBar);
         await bar.waitForDisplayed({ timeout: 5000 });
 
@@ -70,7 +78,7 @@ describe('MMTToolForHUD demo app', () => {
     });
 
     it('runs ring progress to completion', async () => {
-        await $('~demo.progress.ring').click();
+        await $(ids.progressRingButton).click();
         const ring = await $(ids.progressRing);
         await ring.waitForDisplayed({ timeout: 5000 });
 

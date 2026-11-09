@@ -109,13 +109,17 @@ class ViewController: UIViewController {
         }
     }
 
+    /// Prefixes the passed identifier with the automation namespace, e.g.
+    /// "demo.toast.bottom" becomes "MMTToolForHUD.demo.toast.bottom".
+    private static let idPrefix = "MMTToolForHUD."
+
     private func addSection(_ title: String, id: String) {
         let label = UILabel()
         label.text = title
         label.font = .systemFont(ofSize: 13, weight: .semibold)
         label.textColor = .secondaryLabel
         label.textAlignment = .left
-        label.accessibilityIdentifier = id
+        label.accessibilityIdentifier = Self.idPrefix + id
         stack.addArrangedSubview(label)
     }
 
@@ -163,7 +167,7 @@ private final class DemoButton: UIButton {
         titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         backgroundColor = .secondarySystemBackground
         layer.cornerRadius = 12
-        accessibilityIdentifier = identifier
+        accessibilityIdentifier = "MMTToolForHUD." + identifier
         addTarget(self, action: #selector(tapped), for: .touchUpInside)
     }
 

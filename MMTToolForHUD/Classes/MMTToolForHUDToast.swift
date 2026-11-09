@@ -305,6 +305,7 @@ final class MMTToolForHUDToastItemView: UIView {
     private static let verticalPadding: CGFloat = 11
 
     private let label: UILabel
+    private let cornerRadius: CGFloat
 
     init(text: String, icon: (name: String, color: UIColor)?, config: MMTToolForHUDConfig, maxWidth: CGFloat) {
         let label = UILabel()
@@ -316,6 +317,7 @@ final class MMTToolForHUDToastItemView: UIView {
             - Self.horizontalPadding * 2
             - (icon == nil ? 0 : Self.iconSize + Self.iconSpacing), 40)
         self.label = label
+        self.cornerRadius = config.toastCornerRadius
 
         super.init(frame: .zero)
 
@@ -365,6 +367,6 @@ final class MMTToolForHUDToastItemView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        layer.cornerRadius = min(bounds.height / 2, 22)
+        layer.cornerRadius = cornerRadius
     }
 }

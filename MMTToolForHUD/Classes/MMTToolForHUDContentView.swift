@@ -7,21 +7,22 @@ import UIKit
 
 /// Stable accessibility identifiers exposed to UI automation
 /// (XCUITest / Appium). Query them with the "accessibility id" strategy.
+/// Format: `MMTToolForHUD.<area>.<element>[.<detail>]`.
 public enum MMTToolForHUDAccessibilityID {
     /// The HUD panel container.
-    public static let panel = "MMTToolForHUD.panel"
+    public static let panel = "MMTToolForHUD.hud.panel"
     /// The loading spinner inside the HUD panel.
-    public static let spinner = "MMTToolForHUD.spinner"
+    public static let spinner = "MMTToolForHUD.hud.spinner"
     /// The ring-style progress indicator.
-    public static let progressRing = "MMTToolForHUD.progress-ring"
+    public static let progressRing = "MMTToolForHUD.hud.progress.ring"
     /// The bar-style progress indicator.
-    public static let progressBar = "MMTToolForHUD.progress-bar"
+    public static let progressBar = "MMTToolForHUD.hud.progress.bar"
     /// The success / error status icon.
-    public static let statusIcon = "MMTToolForHUD.status-icon"
+    public static let statusIcon = "MMTToolForHUD.hud.status.icon"
     /// The HUD text label.
-    public static let text = "MMTToolForHUD.text"
+    public static let text = "MMTToolForHUD.hud.text"
     /// A toast view (every toast shares this identifier).
-    public static let toast = "MMTToolForHUD.toast"
+    public static let toast = "MMTToolForHUD.toast.item"
 }
 
 /// HUD content view: a dark rounded panel rendering a spinner, a ring or bar

@@ -357,9 +357,14 @@ final class MMTToolForHUDTests: XCTestCase {
         viewController.loadViewIfNeeded()
         let buttons = viewController.view.recursiveSubviews()
             .compactMap { $0 as? UIButton }
-            .filter { $0.accessibilityIdentifier?.hasPrefix("demo.") == true }
+            .filter { $0.accessibilityIdentifier?.hasPrefix("MMTToolForHUD.demo.") == true }
         XCTAssertGreaterThanOrEqual(buttons.count, 14)
         XCTAssertEqual(Set(buttons.compactMap { $0.accessibilityIdentifier }).count, buttons.count)
+        // Every identifier follows the MMTToolForHUD.<area>.<element> format.
+        for identifier in buttons.compactMap({ $0.accessibilityIdentifier }) {
+            let segments = identifier.split(separator: ".")
+            XCTAssertGreaterThanOrEqual(segments.count, 3, "identifier \(identifier) should be hierarchical")
+        }
     }
 }
 

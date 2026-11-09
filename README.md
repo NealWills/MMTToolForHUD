@@ -100,6 +100,7 @@ Frequently used options (see `MMTToolForHUDConfig` for the full list):
 | `statusAutoDismissDelay` | Success/error auto-dismiss delay | 1.6s |
 | `progressStyle` | Default progress style | `.bar` |
 | `toastDuration` / `toastPosition` / `toastMargin` | Toast duration / position / margin | 2s / `.bottom` / 20 |
+| `toastCornerRadius` | Toast corner radius | 8 |
 | `toastBackgroundColor` / `toastFont` | Toast appearance | dark capsule / 14pt medium |
 | `isAnimationEnabled` / `animationDuration` | Animation toggle and duration | true / 0.25s |
 
@@ -129,22 +130,24 @@ xcodebuild test -workspace MMTToolForHUD.xcworkspace -scheme MMTToolForHUD-Examp
 
 All HUD, toast and demo controls expose stable accessibility identifiers so
 XCUITest and Appium can query them with the "accessibility id" strategy.
+Identifier format: `MMTToolForHUD.<area>.<element>[.<detail>]`.
 
 Library identifiers (defined in `MMTToolForHUDAccessibilityID`):
 
 | Identifier | Element |
 |---|---|
-| `MMTToolForHUD.panel` | The HUD panel container |
-| `MMTToolForHUD.spinner` | Loading spinner |
-| `MMTToolForHUD.progress-ring` | Ring progress (accessibility label = percent) |
-| `MMTToolForHUD.progress-bar` | Bar progress (accessibility label = percent) |
-| `MMTToolForHUD.status-icon` | Success / error icon (label = Success / Error) |
-| `MMTToolForHUD.text` | HUD text label |
-| `MMTToolForHUD.toast` | Any toast view (label = toast text) |
+| `MMTToolForHUD.hud.panel` | The HUD panel container |
+| `MMTToolForHUD.hud.spinner` | Loading spinner |
+| `MMTToolForHUD.hud.progress.ring` | Ring progress (accessibility label = percent) |
+| `MMTToolForHUD.hud.progress.bar` | Bar progress (accessibility label = percent) |
+| `MMTToolForHUD.hud.status.icon` | Success / error icon (label = Success / Error) |
+| `MMTToolForHUD.hud.text` | HUD text label |
+| `MMTToolForHUD.toast.item` | Any toast view (label = toast text) |
 
-Example app buttons use `demo.<section>.<name>` identifiers
-(`demo.toast.bottom`, `demo.loading.text`, `demo.progress.ring`, …) and
-section headers use `demo.section.<name>`.
+Example app buttons use `MMTToolForHUD.demo.<section>.<name>` identifiers
+(`MMTToolForHUD.demo.toast.bottom`, `MMTToolForHUD.demo.loading.text`,
+`MMTToolForHUD.demo.progress.ring`, …) and section headers use
+`MMTToolForHUD.demo.section.<name>`.
 
 Appium (WebDriverIO) end-to-end tests live in [`Appium/`](Appium):
 

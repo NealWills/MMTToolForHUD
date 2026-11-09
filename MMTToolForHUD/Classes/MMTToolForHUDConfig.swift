@@ -67,6 +67,8 @@ public struct MMTToolForHUDConfig {
     public var toastSpacing: CGFloat = 10
     /// Toast background color.
     public var toastBackgroundColor = UIColor(white: 0.11, alpha: 0.88)
+    /// Toast corner radius.
+    public var toastCornerRadius: CGFloat = 8
     /// Toast text color.
     public var toastTextColor: UIColor = .white
     /// Toast text font.
