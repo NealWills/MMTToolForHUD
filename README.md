@@ -265,34 +265,88 @@ after the change.
 
 ## UI automation & Appium
 
-All HUD, toast and demo controls expose stable accessibility identifiers
-(queryable with the "accessibility id" strategy). Identifier format:
-`MMTToolForHUD.<area>.<element>[.<detail>]`.
+### Stable accessibility identifiers
+
+Every HUD, toast and demo control exposes a stable accessibility identifier,
+queryable with the **"accessibility id"** strategy. Identifier format:
+`MMTToolForHUD.<area>.<element>[.<detail>]` — renaming is considered a
+breaking change.
 
 Library identifiers (defined in `MMTToolForHUDAccessibilityID`):
 
-| Identifier | Element |
+| Identifier | Element | Accessibility label |
+|---|---|---|
+| `MMTToolForHUD.hud.panel` | The HUD panel container | — |
+| `MMTToolForHUD.hud.spinner` | Loading spinner | "Loading" |
+| `MMTToolForHUD.hud.progress.ring` | Ring progress | current percent, e.g. "45%" |
+| `MMTToolForHUD.hud.progress.bar` | Bar progress | current percent, e.g. "45%" |
+| `MMTToolForHUD.hud.status.icon` | Success / error icon | "Success" / "Error" |
+| `MMTToolForHUD.hud.text` | HUD text label | the text itself |
+| `MMTToolForHUD.toast.item` | Any toast view (shared id) | the toast text |
+
+Example app controls use `MMTToolForHUD.demo.<section>.<name>`:
+
+| Section | Identifiers |
 |---|---|
-| `MMTToolForHUD.hud.panel` | The HUD panel container |
-| `MMTToolForHUD.hud.spinner` | Loading spinner |
-| `MMTToolForHUD.hud.progress.ring` | Ring progress (label = percent) |
-| `MMTToolForHUD.hud.progress.bar` | Bar progress (label = percent) |
-| `MMTToolForHUD.hud.status.icon` | Success / error icon (label = Success / Error) |
-| `MMTToolForHUD.hud.text` | HUD text label |
-| `MMTToolForHUD.toast.item` | Any toast view (label = toast text) |
+| Toast | `…demo.toast.bottom` / `.top` / `.center` / `.icons` / `.long-text` / `.dismiss-all` |
+| Loading | `…demo.loading.spinner` / `.text` / `.block-all` |
+| Status | `…demo.status.success` / `.error` |
+| Progress | `…demo.progress.bar` / `.ring` |
+| Config | `…demo.config.colors` |
+| Headers | `…demo.section.toast` / `.loading` / `.status` / `.progress` / `.config` |
 
-Example app controls use `MMTToolForHUD.demo.<section>.<name>`
-(`MMTToolForHUD.demo.toast.bottom`, `MMTToolForHUD.demo.progress.ring`, …)
-and section headers use `MMTToolForHUD.demo.section.<name>`.
+### Appium setup
 
-Appium (WebDriverIO) end-to-end tests live in [`Appium/`](Appium):
+End-to-end tests live in [`Appium/`](Appium) using Appium 2 + WebDriverIO
+with the XCUITest driver:
 
-```bash
-cd Appium
-npm install
-npm run appium   # terminal 1: start the Appium server
-npm test         # terminal 2: run the suite against the booted simulator
+1. **Prerequisites**: Node 18+, Xcode with an iOS Simulator runtime, and the
+   example app built and installed:
+
+   ```bash
+   cd Example && pod install
+   xcodebuild -workspace MMTToolForHUD.xcworkspace -scheme MMTToolForHUD-Example \
+     -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build
+   xcrun simctl boot "iPhone 16 Pro"
+   APP=$(find ~/Library/Developer/Xcode/DerivedData/MMTToolForHUD-* \
+     -name MMTToolForHUD_Example.app -path "*Debug-iphonesimulator*" | head -1)
+   xcrun simctl install booted "$APP"
+   ```
+
+2. **Install the test stack** and start the server:
+
+   ```bash
+   cd Appium
+   npm install                 # installs appium, wdio and the xcuitest driver
+   npm run appium              # terminal 1: serve on http://127.0.0.1:4723
+   ```
+
+3. **Run the suite**:
+
+   ```bash
+   npm test                    # terminal 2
+   ```
+
+### Writing Appium tests
+
+Select elements with the `~accessibilityId` shorthand and assert on labels:
+
+```js
+const toast = $('~MMTToolForHUD.toast.item');
+await $('~MMTToolForHUD.demo.toast.bottom').click();
+await toast.waitForDisplayed({ timeout: 5000 });
+await expect(toast).toHaveText('This is a bottom toast');
+
+const bar = $('~MMTToolForHUD.hud.progress.bar');
+await $('~MMTToolForHUD.demo.progress.bar').click();
+await bar.waitForDisplayed({ timeout: 5000 });
+await expect(bar).toHaveAttribute('label', '100%');   // percent readout
 ```
+
+The bundled spec (`Appium/specs/hud.spec.js`) covers toast show / stack /
+auto-dismiss, loading with text, success flash, and both progress styles
+end-to-end. Capabilities (device name, UDID, bundle id) are configured in
+[`Appium/wdio.conf.js`](Appium/wdio.conf.js).
 
 ## Example app
 
