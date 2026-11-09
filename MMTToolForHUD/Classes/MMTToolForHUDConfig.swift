@@ -28,6 +28,8 @@ public struct MMTToolForHUDConfig {
     public var cornerRadius: CGFloat = 16
     /// Padding between the HUD panel edge and its content.
     public var hudPadding: CGFloat = 16
+    /// Vertical spacing between the HUD indicator and its text.
+    public var hudTextSpacing: CGFloat = 6
     /// Minimum distance between the HUD panel and the screen edges.
     public var hudMargin: CGFloat = 28
 
