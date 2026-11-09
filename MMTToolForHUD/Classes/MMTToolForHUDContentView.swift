@@ -5,6 +5,25 @@
 
 import UIKit
 
+/// Stable accessibility identifiers exposed to UI automation
+/// (XCUITest / Appium). Query them with the "accessibility id" strategy.
+public enum MMTToolForHUDAccessibilityID {
+    /// The HUD panel container.
+    public static let panel = "MMTToolForHUD.panel"
+    /// The loading spinner inside the HUD panel.
+    public static let spinner = "MMTToolForHUD.spinner"
+    /// The ring-style progress indicator.
+    public static let progressRing = "MMTToolForHUD.progress-ring"
+    /// The bar-style progress indicator.
+    public static let progressBar = "MMTToolForHUD.progress-bar"
+    /// The success / error status icon.
+    public static let statusIcon = "MMTToolForHUD.status-icon"
+    /// The HUD text label.
+    public static let text = "MMTToolForHUD.text"
+    /// A toast view (every toast shares this identifier).
+    public static let toast = "MMTToolForHUD.toast"
+}
+
 /// HUD content view: a dark rounded panel rendering a spinner, a ring or bar
 /// progress indicator, or a status icon, plus optional multi-line text,
 /// depending on the current mode.
@@ -66,6 +85,18 @@ final class MMTToolForHUDContentView: UIView {
         [spinner, ringView, barView, symbolView, percentLabel, textLabel]
             .forEach { $0.translatesAutoresizingMaskIntoConstraints = true; addSubview($0) }
 
+        // Accessibility identifiers for UI automation (XCUITest / Appium).
+        accessibilityIdentifier = MMTToolForHUDAccessibilityID.panel
+        spinner.accessibilityIdentifier = MMTToolForHUDAccessibilityID.spinner
+        ringView.accessibilityIdentifier = MMTToolForHUDAccessibilityID.progressRing
+        ringView.isAccessibilityElement = true
+        barView.accessibilityIdentifier = MMTToolForHUDAccessibilityID.progressBar
+        barView.isAccessibilityElement = true
+        symbolView.accessibilityIdentifier = MMTToolForHUDAccessibilityID.statusIcon
+        symbolView.isAccessibilityElement = true
+        percentLabel.isAccessibilityElement = false
+        textLabel.accessibilityIdentifier = MMTToolForHUDAccessibilityID.text
+
         apply(mode: .spinner, text: nil, progress: 0, animated: false)
     }
 
@@ -115,14 +146,17 @@ final class MMTToolForHUDContentView: UIView {
         case .ring:
             ringView.setProgress(self.progress, animated: animated)
             percentLabel.text = Self.percentText(self.progress)
+            ringView.accessibilityLabel = Self.percentText(self.progress)
         case .bar:
             barView.setProgress(self.progress, animated: animated)
+            barView.accessibilityLabel = Self.percentText(self.progress)
         case .symbol(let name):
             let font = UIFont.systemFont(ofSize: 34, weight: .medium)
             let image = UIImage(systemName: name)?
                 .withConfiguration(UIImage.SymbolConfiguration(font: font))
             symbolView.image = image
             symbolView.isHidden = false
+            symbolView.accessibilityLabel = name == "checkmark.circle.fill" ? "Success" : "Error"
         }
 
         reloadText()
@@ -136,8 +170,10 @@ final class MMTToolForHUDContentView: UIView {
         case .ring:
             ringView.setProgress(progress, animated: animated)
             percentLabel.text = Self.percentText(progress)
+            ringView.accessibilityLabel = Self.percentText(progress)
         case .bar:
             barView.setProgress(progress, animated: animated)
+            barView.accessibilityLabel = Self.percentText(progress)
         default:
             break
         }

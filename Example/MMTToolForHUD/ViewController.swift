@@ -53,30 +53,30 @@ class ViewController: UIViewController {
             stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -20),
         ])
 
-        addSection("Toast")
-        addButton("Toast · bottom") { MMTToolForHUDToast.show("This is a bottom toast") }
-        addButton("Toast · top") { MMTToolForHUDToast.show("Top notice, great for notification-style messages", position: .top) }
-        addButton("Toast · center") { MMTToolForHUDToast.show("Centered toast", position: .center) }
-        addButton("Toast · success / error / info") {
+        addSection("Toast", id: "demo.section.toast")
+        addButton("Toast · bottom", id: "demo.toast.bottom") { MMTToolForHUDToast.show("This is a bottom toast") }
+        addButton("Toast · top", id: "demo.toast.top") { MMTToolForHUDToast.show("Top notice, great for notification-style messages", position: .top) }
+        addButton("Toast · center", id: "demo.toast.center") { MMTToolForHUDToast.show("Centered toast", position: .center) }
+        addButton("Toast · success / error / info", id: "demo.toast.icons") {
             MMTToolForHUDToast.success("Saved successfully")
             MMTToolForHUDToast.error("Network error")
             MMTToolForHUDToast.info("Update available")
         }
-        addButton("Toast · long text wrapping") {
+        addButton("Toast · long text wrapping", id: "demo.toast.long-text") {
             MMTToolForHUDToast.show("This is a fairly long toast message used to demonstrate automatic line wrapping and self-sizing layout without any extra configuration.", duration: 4)
         }
-        addButton("Toast · dismiss all") { MMTToolForHUDToast.dismissAll() }
+        addButton("Toast · dismiss all", id: "demo.toast.dismiss-all") { MMTToolForHUDToast.dismissAll() }
 
-        addSection("Loading")
-        addButton("Loading · spinner only") {
+        addSection("Loading", id: "demo.section.loading")
+        addButton("Loading · spinner only", id: "demo.loading.spinner") {
             MMTToolForHUD.showLoading()
             MMTToolForHUD.dismiss(after: 2)
         }
-        addButton("Loading · with text") {
+        addButton("Loading · with text", id: "demo.loading.text") {
             MMTToolForHUD.showLoading("Loading, please wait…")
             MMTToolForHUD.dismiss(after: 2)
         }
-        addButton("Loading · block whole screen") {
+        addButton("Loading · block whole screen", id: "demo.loading.block-all") {
             MMTToolForHUD.updateConfig { $0.interactionStyle = .blockAll }
             MMTToolForHUD.showLoading("Modal loading…")
             MMTToolForHUD.dismiss(after: 2) {
@@ -85,16 +85,16 @@ class ViewController: UIViewController {
             }
         }
 
-        addSection("Status")
-        addButton("Success") { MMTToolForHUD.showSuccess("Submitted successfully") }
-        addButton("Error") { MMTToolForHUD.showError("Network error, please try again later") }
+        addSection("Status", id: "demo.section.status")
+        addButton("Success", id: "demo.status.success") { MMTToolForHUD.showSuccess("Submitted successfully") }
+        addButton("Error", id: "demo.status.error") { MMTToolForHUD.showError("Network error, please try again later") }
 
-        addSection("Progress")
-        addButton("Bar progress · simulated download") { self.simulateProgress(style: .bar) }
-        addButton("Ring progress · simulated download") { self.simulateProgress(style: .ring) }
+        addSection("Progress", id: "demo.section.progress")
+        addButton("Bar progress · simulated download", id: "demo.progress.bar") { self.simulateProgress(style: .bar) }
+        addButton("Ring progress · simulated download", id: "demo.progress.ring") { self.simulateProgress(style: .ring) }
 
-        addSection("Custom configuration")
-        addButton("Blue rounded HUD") {
+        addSection("Custom configuration", id: "demo.section.config")
+        addButton("Blue rounded HUD", id: "demo.config.blue") {
             MMTToolForHUD.updateConfig {
                 $0.hudBackgroundColor = UIColor.systemBlue.withAlphaComponent(0.92)
                 $0.cornerRadius = 24
@@ -109,17 +109,18 @@ class ViewController: UIViewController {
         }
     }
 
-    private func addSection(_ title: String) {
+    private func addSection(_ title: String, id: String) {
         let label = UILabel()
         label.text = title
         label.font = .systemFont(ofSize: 13, weight: .semibold)
         label.textColor = .secondaryLabel
         label.textAlignment = .left
+        label.accessibilityIdentifier = id
         stack.addArrangedSubview(label)
     }
 
-    private func addButton(_ title: String, handler: @escaping () -> Void) {
-        let button = DemoButton(title: title, handler: handler)
+    private func addButton(_ title: String, id: String, handler: @escaping () -> Void) {
+        let button = DemoButton(title: title, identifier: id, handler: handler)
         stack.addArrangedSubview(button)
         button.heightAnchor.constraint(equalToConstant: 46).isActive = true
     }
@@ -147,12 +148,13 @@ class ViewController: UIViewController {
 
 // MARK: - Demo button
 
-/// A button carrying its tap handler, avoiding one selector per use case.
+/// A button carrying its tap handler and a stable accessibility identifier
+/// for UI automation (XCUITest / Appium).
 private final class DemoButton: UIButton {
 
     private let handler: () -> Void
 
-    init(title: String, handler: @escaping () -> Void) {
+    init(title: String, identifier: String, handler: @escaping () -> Void) {
         self.handler = handler
         super.init(frame: .zero)
 
@@ -161,6 +163,7 @@ private final class DemoButton: UIButton {
         titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         backgroundColor = .secondarySystemBackground
         layer.cornerRadius = 12
+        accessibilityIdentifier = identifier
         addTarget(self, action: #selector(tapped), for: .touchUpInside)
     }
 

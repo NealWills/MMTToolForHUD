@@ -322,6 +322,11 @@ final class MMTToolForHUDToastItemView: UIView {
         backgroundColor = config.toastBackgroundColor
         layer.cornerCurve = .continuous
 
+        // Accessibility identity for UI automation (XCUITest / Appium).
+        isAccessibilityElement = true
+        accessibilityIdentifier = MMTToolForHUDAccessibilityID.toast
+        accessibilityLabel = text
+
         let content = UIStackView()
         content.axis = .horizontal
         content.alignment = .center
