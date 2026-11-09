@@ -9,16 +9,13 @@
 Pod::Spec.new do |s|
   s.name             = 'MMTToolForHUD'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of MMTToolForHUD.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
+  s.summary          = 'A lightweight HUD library for iOS 13+ supporting toast, loading and progress.'
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+MMTToolForHUD is a lightweight, thread-safe HUD library for iOS 13+.
+It supports toast messages (stackable, with success/error/info icons),
+loading indicators, bar & ring progress, and auto-dismissing status flash.
+Fully customizable via a single MMTHUDConfig.
                        DESC
 
   s.homepage         = 'https://github.com/nealwills/MMTToolForHUD'
@@ -28,7 +25,8 @@ TODO: Add long description of the pod here.
   s.source           = { :git => 'https://github.com/nealwills/MMTToolForHUD.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '13.0'
+  s.swift_version = '5.0'
 
   s.source_files = 'MMTToolForHUD/Classes/**/*'
   

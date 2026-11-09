@@ -21,6 +21,12 @@ DerivedData
 # Bundler
 .bundle
 
+# VS Code
+.vscode/
+
+# CocoaPods example dependencies
+Example/Pods/
+
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
 # Carthage/Checkouts
 
