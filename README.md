@@ -371,6 +371,25 @@ xcodebuild test -workspace MMTToolForHUD.xcworkspace -scheme MMTToolForHUD-Examp
   -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
 ```
 
+### Performance testing
+
+Automated benchmarks with budget assertions live in
+`MMTToolForHUDPerformanceTests`. One command runs them and writes JSON +
+Markdown reports into [`PerformanceReports/`](PerformanceReports) (reports
+are committed to the repository as history):
+
+```bash
+scripts/run-performance-tests.sh          # uses the booted simulator
+scripts/run-performance-tests.sh "iPhone 16 Pro"   # or by name
+```
+
+The report covers show/dismiss cycles, per-call `updateProgress` cost,
+text-measurement (`preferredSize`) cost, toast lifecycle cost and a memory
+stress pass, each asserted against a documented budget. XCTest-native
+`measure` baselines (`testShowDismissBaseline`,
+`testProgressUpdateBaseline`) are also available for Xcode's baseline
+curves.
+
 ## Contributing
 
 This project uses **English only**: code, comments, documentation, example

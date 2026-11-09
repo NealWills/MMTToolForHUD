@@ -468,3 +468,223 @@ private extension UIView {
         subviews + subviews.flatMap { $0.recursiveSubviews() }
     }
 }
+
+// MARK: - Performance testing
+
+/// Automated performance benchmarks with budget assertions and JSON/Markdown
+/// report output. Run via `scripts/run-performance-tests.sh`, which passes
+/// PERF_REPORT_DIR to the test process.
+final class MMTToolForHUDPerformanceTests: XCTestCase {
+
+    private var window: UIWindow!
+    private var originalConfig: MMTToolForHUDConfig!
+
+    override func setUp() {
+        super.setUp()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window.makeKeyAndVisible()
+        originalConfig = MMTToolForHUD.config
+        // Deterministic timing: disable animations and auto-dismiss.
+        MMTToolForHUD.updateConfig {
+            $0.isAnimationEnabled = false
+            $0.statusAutoDismissDelay = 60
+        }
+    }
+
+    override func tearDown() {
+        MMTToolForHUD.config = originalConfig
+        MMTToolForHUDToast.dismissAll()
+        MMTToolForHUD.dismiss(in: window, animated: false)
+        window = nil
+        super.tearDown()
+    }
+
+    // MARK: Benchmark harness
+
+    struct Benchmark: Codable {
+        let name: String
+        let iterations: Int
+        let averageMs: Double
+        let maxMs: Double
+        let budgetMs: Double
+        var passed: Bool { averageMs <= budgetMs }
+    }
+
+    private func benchmark(_ name: String,
+                           budgetMs: Double,
+                           iterations: Int,
+                           warmup: Int = 3,
+                           _ body: () -> Void) {
+        for _ in 0..<warmup { body() }
+
+        var maxMs = 0.0
+        let start = CFAbsoluteTimeGetCurrent()
+        for _ in 0..<iterations {
+            let t0 = CFAbsoluteTimeGetCurrent()
+            body()
+            maxMs = max(maxMs, (CFAbsoluteTimeGetCurrent() - t0) * 1000)
+        }
+        let totalMs = (CFAbsoluteTimeGetCurrent() - start) * 1000
+        let averageMs = totalMs / Double(iterations)
+
+        Self.collected.append(Benchmark(name: name,
+                                         iterations: iterations,
+                                         averageMs: averageMs,
+                                         maxMs: maxMs,
+                                         budgetMs: budgetMs))
+        XCTAssertLessThanOrEqual(averageMs, budgetMs,
+                                 "\(name): average \(String(format: "%.3f", averageMs))ms exceeded budget \(budgetMs)ms")
+    }
+
+    private static var collected: [Benchmark] = []
+
+    // MARK: Report
+
+    private func writeReport(memoryDeltaKb: Int64?) {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd HH.mm.ss"
+        let stamp = formatter.string(from: Date())
+
+        let reportDir = ProcessInfo.processInfo.environment["PERF_REPORT_DIR"]
+            ?? NSTemporaryDirectory()
+        let url = URL(fileURLWithPath: reportDir)
+        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+
+        struct Report: Codable {
+            let generatedAt: String
+            let device: String
+            let benchmarks: [Benchmark]
+            let memoryDeltaKb: Int64?
+        }
+        var sysinfo = utsname()
+        uname(&sysinfo)
+        let device = withUnsafeBytes(of: &sysinfo.machine) { bytes in
+            String(decoding: bytes.prefix(while: { $0 != 0 }), as: UTF8.self)
+        }
+        let report = Report(generatedAt: stamp,
+                            device: device,
+                            benchmarks: Self.collected,
+                            memoryDeltaKb: memoryDeltaKb)
+
+        if let data = try? JSONEncoder().encode(report) {
+            let containerDir = url.appendingPathComponent("perf-report-\(stamp).json")
+            try? data.write(to: containerDir)
+        }
+
+        var markdown = """
+        # MMTToolForHUD performance report
+
+        Generated: \(stamp) · Device: \(device)
+
+        | Benchmark | Iterations | Average | Max | Budget | Status |
+        |---|---:|---:|---:|---:|---|
+        """
+        for b in Self.collected {
+            markdown += "\n| \(b.name) | \(b.iterations) | \(String(format: "%.3f", b.averageMs))ms | \(String(format: "%.3f", b.maxMs))ms | \(String(format: "%.1f", b.budgetMs))ms | \(b.passed ? "PASS" : "FAIL") |"
+        }
+        if let delta = memoryDeltaKb {
+            markdown += "\n\nMemory footprint delta after stress cycles: \(delta) KB (informational, no budget)."
+        }
+        try? markdown.data(using: .utf8)?
+            .write(to: url.appendingPathComponent("perf-report-\(stamp).md"))
+
+        // Always emit the report on stdout between sentinels so the runner
+        // script can extract it reliably from the build log.
+        let json = (try? JSONEncoder().encode(report))
+            .flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+        print("\n===== MMTToolForHUD PERFORMANCE-BEGIN =====\n\(markdown)\n===== MMTToolForHUD PERFORMANCE-JSON =====\n\(json)\n===== MMTToolForHUD PERFORMANCE-END =====")
+    }
+
+    // MARK: Memory helper
+
+    private func physFootprintKb() -> Int64? {
+        var info = task_vm_info_data_t()
+        var count = mach_msg_type_number_t(
+            MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+        let result = withUnsafeMutablePointer(to: &info) { pointer in
+            pointer.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+                task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+            }
+        }
+        guard result == KERN_SUCCESS else { return nil }
+        return Int64(info.phys_footprint) / 1024
+    }
+
+    // MARK: Benchmarks
+
+    func testPerformanceReport() {
+        Self.collected = []
+
+        benchmark("showLoading + layout + dismiss (per cycle)",
+                  budgetMs: 15, iterations: 50) {
+            MMTToolForHUD.showLoading("Loading, please wait…", in: self.window)
+            self.window.layoutIfNeeded()
+            MMTToolForHUD.dismiss(in: self.window, animated: false)
+        }
+
+        MMTToolForHUD.showProgress(0, text: "Downloading", in: window)
+        window.layoutIfNeeded()
+        benchmark("updateProgress (per call)",
+                  budgetMs: 2, iterations: 200, warmup: 10) {
+            MMTToolForHUD.updateProgress(Float.random(in: 0...1), in: self.window)
+        }
+        MMTToolForHUD.dismiss(in: window, animated: false)
+
+        let contentView = MMTToolForHUDContentView()
+        contentView.apply(config: MMTToolForHUD.config)
+        contentView.apply(mode: .spinner,
+                          text: "A fairly long loading message that wraps and exercises text measurement",
+                          progress: 0,
+                          animated: false)
+        benchmark("preferredSize with long text (per call)",
+                  budgetMs: 1, iterations: 500, warmup: 10) {
+            _ = contentView.preferredSize(maxWidth: 300)
+        }
+
+        benchmark("toast present + remove (per cycle)",
+                  budgetMs: 5, iterations: 100) {
+            MMTToolForHUDToast.show("perf", duration: 60, in: self.window)
+            if let item = self.window.subviews
+                .compactMap({ $0 as? MMTToolForHUDToastContainerView })
+                .flatMap({ $0.stack.arrangedSubviews })
+                .compactMap({ $0 as? MMTToolForHUDToastItemView })
+                .first {
+                MMTToolForHUDToastManager.shared.removeItem(item, animated: false)
+            }
+        }
+
+        // Informational memory stress: many full cycles must not grow the
+        // footprint (containers and work items must be released).
+        let beforeKb = physFootprintKb()
+        for _ in 0..<300 {
+            MMTToolForHUD.showLoading("stress", in: window)
+            MMTToolForHUD.dismiss(in: window, animated: false)
+            MMTToolForHUDToast.show("stress", duration: 60, in: window)
+            MMTToolForHUDToast.dismissAll()
+        }
+        let afterKb = physFootprintKb()
+
+        writeReport(memoryDeltaKb: (beforeKb != nil && afterKb != nil) ? afterKb! - beforeKb! : nil)
+    }
+
+    // MARK: XCTest-native baselines (curves visible in Xcode)
+
+    func testShowDismissBaseline() {
+        measure {
+            MMTToolForHUD.showLoading("Loading", in: window)
+            window.layoutIfNeeded()
+            MMTToolForHUD.dismiss(in: window, animated: false)
+        }
+    }
+
+    func testProgressUpdateBaseline() {
+        MMTToolForHUD.showProgress(0, text: "Downloading", in: window)
+        measure {
+            for i in 1...25 {
+                MMTToolForHUD.updateProgress(Float(i) / 25, in: window)
+            }
+        }
+        MMTToolForHUD.dismiss(in: window, animated: false)
+    }
+}
