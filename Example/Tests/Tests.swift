@@ -37,15 +37,92 @@ final class MMTToolForHUDTests: XCTestCase {
         XCTAssertEqual(config.progressStyle, .bar)
         XCTAssertEqual(config.interactionStyle, .blockHUD)
         XCTAssertEqual(config.statusAutoDismissDelay, 1.6)
-        XCTAssertEqual(config.spinnerColor, .white)
-        XCTAssertEqual(config.successIconColor, .systemGreen)
-        XCTAssertEqual(config.errorIconColor, .systemRed)
+        XCTAssertEqual(config.spinnerColor, UIColor(red: 1, green: 1, blue: 1, alpha: 1))
+        XCTAssertEqual(config.successIconColor,
+                       UIColor(red: 52 / 255, green: 199 / 255, blue: 89 / 255, alpha: 1))
+        XCTAssertEqual(config.errorIconColor,
+                       UIColor(red: 1, green: 59 / 255, blue: 48 / 255, alpha: 1))
+    }
+
+    /// Every default color must be a fixed RGB value: resolving it in light
+    /// and dark trait collections yields identical components, so the system
+    /// never swaps HUD / toast colors when the interface style changes.
+    /// Uses a fresh value so global mutations in other tests cannot leak in.
+    func testDefaultColorsAreDarkModeInvariant() {
+        let config = MMTToolForHUDConfig()
+        let colors: [String: UIColor] = [
+            "hudBackgroundColor": config.hudBackgroundColor,
+            "tintColor": config.tintColor,
+            "spinnerColor": config.spinnerColor,
+            "successIconColor": config.successIconColor,
+            "errorIconColor": config.errorIconColor,
+            "textColor": config.textColor,
+            "progressTrackColor": config.progressTrackColor,
+            "toastBackgroundColor": config.toastBackgroundColor,
+            "toastTextColor": config.toastTextColor,
+        ]
+        for (name, color) in colors {
+            assertSameRGBInLightAndDark(color, name)
+        }
+    }
+
+    private func assertSameRGBInLightAndDark(_ color: UIColor, _ name: String) {
+        let light = color.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        let dark = color.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+        var lr: CGFloat = 0, lg: CGFloat = 0, lb: CGFloat = 0, la: CGFloat = 0
+        var dr: CGFloat = 0, dg: CGFloat = 0, db: CGFloat = 0, da: CGFloat = 0
+        XCTAssertTrue(light.getRed(&lr, green: &lg, blue: &lb, alpha: &la))
+        XCTAssertTrue(dark.getRed(&dr, green: &dg, blue: &db, alpha: &da))
+        XCTAssertEqual(lr, dr, accuracy: 0.001, "\(name) red channel must not adapt to dark mode")
+        XCTAssertEqual(lg, dg, accuracy: 0.001, "\(name) green channel must not adapt to dark mode")
+        XCTAssertEqual(lb, db, accuracy: 0.001, "\(name) blue channel must not adapt to dark mode")
+        XCTAssertEqual(la, da, accuracy: 0.001, "\(name) alpha channel must not adapt to dark mode")
     }
 
     func testConfigSharedBetweenHUDAndToast() {
         MMTToolForHUDToast.config.toastDuration = 3.5
         defer { MMTToolForHUD.config.toastDuration = 2.0 }
         XCTAssertEqual(MMTToolForHUD.config.toastDuration, 3.5)
+    }
+
+    // MARK: - Version
+
+    func testVersionIsSemantic() throws {
+        let regex = try NSRegularExpression(pattern: #"^\d+\.\d+\.\d+$"#)
+        let version = MMTToolForHUD.version
+        let range = NSRange(version.startIndex..., in: version)
+        XCTAssertNotNil(regex.firstMatch(in: version, range: range),
+                        "version must be semantic (major.minor.patch)")
+    }
+
+    /// The release notes must not be blank so an about screen never
+    /// renders an empty description.
+    func testVersionDescriptionIsNotBlank() {
+        XCTAssertFalse(MMTToolForHUD.versionDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                       "versionDescription must not be blank")
+    }
+
+    /// The version exposed in code must match the podspec so the shipped
+    /// value never drifts from the released pod.
+    func testVersionMatchesPodspec() throws {
+        XCTAssertEqual(MMTToolForHUD.version, try podspecValue(of: "version"))
+    }
+
+    /// Loads the podspec from the repository root (the test file lives at
+    /// `<root>/Example/Tests/Tests.swift`) and extracts the value assigned
+    /// to `s.<key>`.
+    private func podspecValue(of key: String) throws -> String {
+        let podspecURL = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()  // Tests/
+            .deletingLastPathComponent()  // Example/
+            .deletingLastPathComponent()  // repo root
+            .appendingPathComponent("MMTToolForHUD.podspec")
+        let podspec = try String(contentsOf: podspecURL, encoding: .utf8)
+        let regex = try NSRegularExpression(pattern: "s\\.\(key)\\s*=\\s*'([^']+)'")
+        let match = try XCTUnwrap(
+            regex.firstMatch(in: podspec, range: NSRange(podspec.startIndex..., in: podspec)),
+            "podspec must declare s.\(key)")
+        return String(podspec[Range(match.range(at: 1), in: podspec)!])
     }
 
     // MARK: - Loading
@@ -730,6 +807,8 @@ final class MMTToolForHUDReviewFixTests: XCTestCase {
     /// The status icon tint comes from the presentation payload, not from
     /// string matching on the symbol name.
     func testStatusIconTintMatchesConfiguration() {
+        let originalConfig = MMTToolForHUD.config
+        defer { MMTToolForHUD.config = originalConfig }
         MMTToolForHUD.updateConfig {
             $0.successIconColor = .systemGreen
             $0.errorIconColor = .systemRed

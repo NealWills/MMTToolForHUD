@@ -5,29 +5,12 @@
 
 import UIKit
 
-/// Stable accessibility identifiers exposed to UI automation
-/// (XCUITest / Appium). Query them with the "accessibility id" strategy.
-/// Format: `MMTToolForHUD.<area>.<element>[.<detail>]`.
-public enum MMTToolForHUDAccessibilityID {
-    /// The HUD panel container.
-    public static let panel = "MMTToolForHUD.hud.panel"
-    /// The loading spinner inside the HUD panel.
-    public static let spinner = "MMTToolForHUD.hud.spinner"
-    /// The ring-style progress indicator.
-    public static let progressRing = "MMTToolForHUD.hud.progress.ring"
-    /// The bar-style progress indicator.
-    public static let progressBar = "MMTToolForHUD.hud.progress.bar"
-    /// The success / error status icon.
-    public static let statusIcon = "MMTToolForHUD.hud.status.icon"
-    /// The HUD text label.
-    public static let text = "MMTToolForHUD.hud.text"
-    /// A toast view (every toast shares this identifier).
-    public static let toast = "MMTToolForHUD.toast.item"
-}
-
 /// HUD content view: a dark rounded panel rendering a spinner, a ring or bar
 /// progress indicator, or a status icon, plus optional multi-line text,
 /// depending on the current mode.
+///
+/// The public accessibility identifiers it exposes live in
+/// `MMTToolForHUDAccessibilityID` (MMTToolForHUDAPI.swift).
 final class MMTToolForHUDContentView: UIView {
 
     // MARK: - Mode
@@ -366,7 +349,7 @@ final class MMTToolForHUDRingView: UIView {
 
     private let trackLayer = CAShapeLayer()
     private let fillLayer = CAShapeLayer()
-    private var tint: UIColor = .white
+    private var tint = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
     private var lineWidth: CGFloat = 4
 
     override init(frame: CGRect) {
@@ -374,7 +357,7 @@ final class MMTToolForHUDRingView: UIView {
         backgroundColor = .clear
 
         trackLayer.fillColor = nil
-        trackLayer.strokeColor = UIColor(white: 1, alpha: 0.28).cgColor
+        trackLayer.strokeColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.28).cgColor
         fillLayer.fillColor = nil
         fillLayer.strokeColor = tint.cgColor
         fillLayer.transform = CATransform3DMakeRotation(-.pi / 2, 0, 0, 1)
@@ -443,8 +426,8 @@ final class MMTToolForHUDBarView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
-        trackView.backgroundColor = UIColor(white: 1, alpha: 0.28)
-        fillView.backgroundColor = .white
+        trackView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.28)
+        fillView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
         [trackView, fillView].forEach { addSubview($0) }
     }
 

@@ -1,106 +1,11 @@
 //
-//  MMTToolForHUDToast.swift
+//  MMTToolForHUDToastManager.swift
 //  MMTToolForHUD
+//
+//  Created by nealwills on 2026/11/09.
 //
 
 import UIKit
-
-/// Toast entry point: stackable, auto-dismissing, never blocks touches.
-///
-///     MMTToolForHUDToast.show("Saved")
-///     MMTToolForHUDToast.success("Submitted")
-///     MMTToolForHUDToast.error("Network error", position: .top)
-///     MMTToolForHUDToast.dismissAll()
-///
-/// All APIs are thread-safe: calls from non-main threads are dispatched
-/// to the main thread automatically.
-public final class MMTToolForHUDToast {
-
-    private init() {}
-
-    // MARK: - Presenting
-
-    /// Shows a plain-text toast.
-    /// - Parameters:
-    ///   - text: Message text; multi-line is supported.
-    ///   - duration: How long the toast stays visible; defaults to
-    ///     `config.toastDuration`.
-    ///   - position: Where the toast appears; defaults to
-    ///     `config.toastPosition`.
-    public static func show(_ text: String,
-                            duration: TimeInterval? = nil,
-                            position: MMTToolForHUDToastPosition? = nil,
-                            in window: UIWindow? = nil) {
-        MMTToolForHUD.onMain {
-            MMTToolForHUDToastManager.shared.show(text: text, icon: nil,
-                                                  duration: duration, position: position, window: window)
-        }
-    }
-
-    /// Shows a success toast (green checkmark icon).
-    public static func success(_ text: String,
-                               duration: TimeInterval? = nil,
-                               position: MMTToolForHUDToastPosition? = nil,
-                               in window: UIWindow? = nil) {
-        MMTToolForHUD.onMain {
-            MMTToolForHUDToastManager.shared.show(text: text,
-                                                  icon: ("checkmark.circle.fill", .systemGreen),
-                                                  duration: duration, position: position, window: window)
-        }
-    }
-
-    /// Shows an error toast (red cross icon).
-    public static func error(_ text: String,
-                             duration: TimeInterval? = nil,
-                             position: MMTToolForHUDToastPosition? = nil,
-                             in window: UIWindow? = nil) {
-        MMTToolForHUD.onMain {
-            MMTToolForHUDToastManager.shared.show(text: text,
-                                                  icon: ("xmark.circle.fill", .systemRed),
-                                                  duration: duration, position: position, window: window)
-        }
-    }
-
-    /// Shows an info toast (blue info icon).
-    public static func info(_ text: String,
-                            duration: TimeInterval? = nil,
-                            position: MMTToolForHUDToastPosition? = nil,
-                            in window: UIWindow? = nil) {
-        MMTToolForHUD.onMain {
-            MMTToolForHUDToastManager.shared.show(text: text,
-                                                  icon: ("info.circle.fill", .systemBlue),
-                                                  duration: duration, position: position, window: window)
-        }
-    }
-
-    /// Removes all visible toasts immediately (animated). Pass a window to
-    /// only clear the toasts on that window; nil clears every window.
-    public static func dismissAll(in window: UIWindow? = nil) {
-        MMTToolForHUD.onMain {
-            MMTToolForHUDToastManager.shared.dismissAll(in: window)
-        }
-    }
-
-    // MARK: - State / configuration
-
-    /// Whether any toast is currently visible on any window.
-    public static var isVisible: Bool {
-        MMTToolForHUD.onMainSync { MMTToolForHUDToastManager.shared.hasVisibleToast(in: nil) }
-    }
-
-    /// Whether a toast is visible on the given window.
-    public static func isVisible(in window: UIWindow?) -> Bool {
-        MMTToolForHUD.onMainSync { MMTToolForHUDToastManager.shared.hasVisibleToast(in: window) }
-    }
-
-    /// Alias of the global configuration; identical to `MMTToolForHUD.config`.
-    public static var config: MMTToolForHUDConfig {
-        get { MMTToolForHUD.config }
-        set { MMTToolForHUD.config = newValue }
-    }
-}
-
-// MARK: - Toast manager
 
 /// Creates the per-position toast containers and handles stacking and
 /// automatic removal.

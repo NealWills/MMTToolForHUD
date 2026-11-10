@@ -15,6 +15,7 @@ class ViewController: UIViewController {
 
     private let scrollView = UIScrollView()
     private let stack = UIStackView()
+    private let versionButton = UIButton(type: .system)
 
     // MARK: - Lifecycle
 
@@ -22,6 +23,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemGroupedBackground
         setupUI()
+        setupVersionButton()
     }
 
     deinit {
@@ -113,6 +115,40 @@ class ViewController: UIViewController {
     /// Prefixes the passed identifier with the automation namespace, e.g.
     /// "demo.toast.bottom" becomes "MMTToolForHUD.demo.toast.bottom".
     private static let idPrefix = "MMTToolForHUD."
+
+    // MARK: - Version info
+
+    /// Floating info button pinned to the top-right corner: shows the
+    /// library version and its release notes via a multi-line toast.
+    private func setupVersionButton() {
+        versionButton.setImage(UIImage(systemName: "info.circle"), for: .normal)
+        versionButton.tintColor = .label
+        versionButton.backgroundColor = .secondarySystemBackground
+        versionButton.layer.cornerRadius = 18
+        versionButton.clipsToBounds = true
+        versionButton.accessibilityIdentifier = Self.idPrefix + "demo.version"
+        versionButton.accessibilityLabel = "Version information"
+        versionButton.addTarget(self, action: #selector(showVersionInfo), for: .touchUpInside)
+        versionButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(versionButton)
+
+        NSLayoutConstraint.activate([
+            versionButton.widthAnchor.constraint(equalToConstant: 36),
+            versionButton.heightAnchor.constraint(equalToConstant: 36),
+            versionButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
+                                                    constant: -20),
+            versionButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+                                               constant: 8),
+        ])
+    }
+
+    @objc private func showVersionInfo() {
+        MMTToolForHUDToast.show(
+            "MMTToolForHUD \(MMTToolForHUD.version)\n\(MMTToolForHUD.versionDescription)",
+            duration: 6,
+            position: .top
+        )
+    }
 
     private func addSection(_ title: String, id: String) {
         let label = UILabel()

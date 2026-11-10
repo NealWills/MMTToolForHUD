@@ -1,5 +1,5 @@
 //
-//  MMTToolForHUD.swift
+//  MMTToolForHUDPresenter.swift
 //  MMTToolForHUD
 //
 //  Created by nealwills on 2026/11/09.
@@ -7,151 +7,14 @@
 
 import UIKit
 
-/// Main HUD entry point: loading / progress / status presentation.
-///
-///     MMTToolForHUD.showLoading("Loading...")
-///     MMTToolForHUD.showProgress(0.3, text: "Downloading")
-///     MMTToolForHUD.updateProgress(0.8)
-///     MMTToolForHUD.showSuccess("Saved")       // auto-dismisses
-///     MMTToolForHUD.dismiss()
-///
-/// Every show / dismiss call targets a specific window (defaults to the
-/// front window) and only manages the HUD attached to that window, so
-/// multiple windows can display independent HUDs.
-///
-/// All APIs are thread-safe: calls from non-main threads are dispatched
-/// to the main thread automatically.
-public final class MMTToolForHUD {
+// MARK: - Internal entry-point surface
 
+/// Internal implementation members of the public `MMTToolForHUD` entry
+/// point (declared in MMTToolForHUDAPI.swift).
+extension MMTToolForHUD {
+
+    /// Shared presentation controller owning one HUD container per window.
     static let presenter = MMTToolForHUDPresenter()
-
-    private init() {}
-
-    // MARK: - Configuration
-
-    /// Global configuration; changes only apply to HUDs presented afterwards.
-    ///
-    /// - Note: this is a value type. Writing `MMTToolForHUD.config.someField = x`
-    ///   mutates a temporary copy and has no effect; use `updateConfig(_:)`
-    ///   or assign a complete value instead.
-    public static var config: MMTToolForHUDConfig {
-        get { onMainSync { presenter.config } }
-        set { onMain { presenter.config = newValue } }
-    }
-
-    /// Modifies the global configuration in place.
-    public static func updateConfig(_ mutate: @escaping (inout MMTToolForHUDConfig) -> Void) {
-        onMain {
-            var config = presenter.config
-            mutate(&config)
-            presenter.config = config
-        }
-    }
-
-    // MARK: - Loading
-
-    /// Shows a loading spinner, optionally with text, on the given window.
-    /// If a HUD is already visible there its content is replaced in place;
-    /// call `dismiss(in:)` to hide it.
-    public static func showLoading(_ text: String? = nil, in window: UIWindow? = nil) {
-        onMain {
-            presenter.show(mode: .spinner, text: text, progress: 0, window: window)
-        }
-    }
-
-    // MARK: - Progress
-
-    /// Shows progress on the given window; `style` defaults to
-    /// `config.progressStyle`. Progress is clamped to 0.0...1.0.
-    public static func showProgress(_ progress: Float,
-                                    text: String? = nil,
-                                    style: MMTToolForHUDProgressStyle? = nil,
-                                    in window: UIWindow? = nil) {
-        onMain {
-            let mode: MMTToolForHUDContentView.Mode = (style ?? presenter.config.progressStyle) == .ring ? .ring : .bar
-            presenter.show(mode: mode, text: text, progress: progress, window: window)
-        }
-    }
-
-    /// Updates the progress of the HUD on the given window (front window by
-    /// default); ignored when no progress HUD is shown there. Passing nil as
-    /// text keeps the current text.
-    public static func updateProgress(_ progress: Float,
-                                      text: String? = nil,
-                                      in window: UIWindow? = nil) {
-        onMain {
-            presenter.updateProgress(progress, text: text, window: window)
-        }
-    }
-
-    // MARK: - Status
-
-    /// Shows a success status (checkmark) on the given window that
-    /// auto-dismisses after `config.statusAutoDismissDelay` seconds.
-    public static func showSuccess(_ text: String? = nil, in window: UIWindow? = nil) {
-        onMain {
-            presenter.show(mode: .symbol(name: "checkmark.circle.fill",
-                                         tint: presenter.config.successIconColor,
-                                         label: "Success"),
-                           text: text, progress: 0, window: window,
-                           autoDismissAfter: presenter.config.statusAutoDismissDelay)
-        }
-    }
-
-    /// Shows an error status (cross) on the given window that auto-dismisses
-    /// after `config.statusAutoDismissDelay` seconds.
-    public static func showError(_ text: String? = nil, in window: UIWindow? = nil) {
-        onMain {
-            presenter.show(mode: .symbol(name: "xmark.circle.fill",
-                                         tint: presenter.config.errorIconColor,
-                                         label: "Error"),
-                           text: text, progress: 0, window: window,
-                           autoDismissAfter: presenter.config.statusAutoDismissDelay)
-        }
-    }
-
-    // MARK: - Dismissal
-
-    /// Dismisses the HUD on the given window (front window by default).
-    /// `completion` runs on the main thread after the HUD is fully removed.
-    public static func dismiss(in window: UIWindow? = nil,
-                               animated: Bool = true,
-                               completion: (() -> Void)? = nil) {
-        onMain {
-            presenter.dismiss(window: window, animated: animated, completion: completion)
-        }
-    }
-
-    /// Dismisses the HUD on the given window after a delay.
-    public static func dismiss(after delay: TimeInterval,
-                               in window: UIWindow? = nil,
-                               animated: Bool = true,
-                               completion: (() -> Void)? = nil) {
-        onMain {
-            presenter.scheduleDismiss(after: delay, window: window,
-                                      animated: animated, completion: completion)
-        }
-    }
-
-    // MARK: - State
-
-    /// Whether a HUD is visible on any window.
-    public static var isVisible: Bool { onMainSync { presenter.hasVisibleHUD } }
-
-    /// Whether a HUD is visible on the given window (front window by default).
-    public static func isVisible(in window: UIWindow? = nil) -> Bool {
-        onMainSync { presenter.isVisible(window: window) }
-    }
-
-    /// The progress of the visible HUD on any window, or nil.
-    public static var currentProgress: Float? { onMainSync { presenter.currentProgress(window: nil) } }
-
-    /// The progress of the HUD on the given window, or nil.
-    public static func currentProgress(in window: UIWindow? = nil) -> Float? {
-        onMainSync { presenter.currentProgress(window: window) }
-    }
-
-    // MARK: - Utilities
 
     static func onMain(_ work: @escaping () -> Void) {
         if Thread.isMainThread {

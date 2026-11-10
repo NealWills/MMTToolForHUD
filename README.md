@@ -26,6 +26,7 @@ fully customizable through a single `MMTToolForHUDConfig`.
 - [Example app](#example-app)
 - [Testing](#testing)
 - [Documents & reports](#documents--reports)
+- [Project layout](#project-layout)
 - [Contributing](#contributing)
 - [Author](#author)
 - [License](#license)
@@ -51,6 +52,20 @@ Performance reports are committed to the repository. The filename carries
 the version tag (`perf-report-<version>.md/.json`) and every run replaces
 the report for its version, so each tag keeps exactly one final report
 under `PerformanceReports/`.
+
+## Project layout
+
+The public API lives in a single file; everything else is internal
+implementation.
+
+| File | Visibility | Contents |
+|---|---|---|
+| [`MMTToolForHUDAPI.swift`](MMTToolForHUD/Classes/MMTToolForHUDAPI.swift) | Public | `MMTToolForHUD`, `MMTToolForHUDToast`, `MMTToolForHUDConfig`, progress / toast style enums, accessibility IDs |
+| [`MMTToolForHUDPresenter.swift`](MMTToolForHUD/Classes/MMTToolForHUDPresenter.swift) | Internal | Per-window HUD presentation controller, threading helpers |
+| [`MMTToolForHUDToastManager.swift`](MMTToolForHUD/Classes/MMTToolForHUDToastManager.swift) | Internal | Toast stacking manager, container and item views |
+| [`MMTToolForHUDContainerView.swift`](MMTToolForHUD/Classes/MMTToolForHUDContainerView.swift) | Internal | Full-window HUD container, touch interception |
+| [`MMTToolForHUDContentView.swift`](MMTToolForHUD/Classes/MMTToolForHUDContentView.swift) | Internal | HUD panel, ring / bar indicator views |
+| [`MMTToolForHUDWindowFinder.swift`](MMTToolForHUD/Classes/MMTToolForHUDWindowFinder.swift) | Internal | UIScene front-window resolution |
 
 ## Features
 
@@ -219,6 +234,8 @@ keyboard-heavy screens if that matters.
 
 | API | Description |
 |---|---|
+| `version` | Library version string (e.g. `"0.6.2"`), kept in sync with the podspec |
+| `versionDescription` | Release notes: what changed in the current version since the previous release |
 | `showLoading(_:in:)` | Spinner with optional text |
 | `showProgress(_:text:style:in:)` | Bar or ring progress |
 | `updateProgress(_:text:in:)` | Update the visible progress (ignored when none is shown) |
@@ -269,12 +286,16 @@ after the change.
 
 ### Colors
 
+All default colors are fixed RGB values created with
+`UIColor(red:green:blue:alpha:)`; they render identically in light and dark
+mode and are never swapped by the system.
+
 | Option | Description | Default |
 |---|---|---|
-| `spinnerColor` | Loading spinner render color | white |
-| `successIconColor` | Success icon render color | system green |
-| `errorIconColor` | Error icon render color | system red |
-| `tintColor` | Progress tint (bar, ring, percent label) | white |
+| `spinnerColor` | Loading spinner render color | white (RGB 1, 1, 1) |
+| `successIconColor` | Success icon render color | fixed green (52, 199, 89) |
+| `errorIconColor` | Error icon render color | fixed red (255, 59, 48) |
+| `tintColor` | Progress tint (bar, ring, percent label) | white (RGB 1, 1, 1) |
 
 ### Progress
 
@@ -388,7 +409,8 @@ end-to-end. Capabilities (device name, UDID, bundle id) are configured in
 The example app demonstrates every feature with one-tap buttons: toasts in
 all positions with icons, loading with and without text, modal loading,
 status flashes, bar / ring progress with a simulated download, and custom
-colors.
+colors. An info button in the top-right corner shows the library version
+and its release notes.
 
 ```bash
 cd Example
