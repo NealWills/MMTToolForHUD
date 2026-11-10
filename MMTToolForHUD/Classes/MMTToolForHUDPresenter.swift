@@ -10,7 +10,7 @@ import UIKit
 // MARK: - Internal entry-point surface
 
 /// Internal implementation members of the public `MMTToolForHUD` entry
-/// point (declared in MMTToolForHUDAPI.swift).
+/// point (declared in MMTToolForHUD.swift).
 extension MMTToolForHUD {
 
     /// Shared presentation controller owning one HUD container per window.

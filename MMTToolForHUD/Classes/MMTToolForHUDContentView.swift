@@ -10,7 +10,7 @@ import UIKit
 /// depending on the current mode.
 ///
 /// The public accessibility identifiers it exposes live in
-/// `MMTToolForHUDAccessibilityID` (MMTToolForHUDAPI.swift).
+/// `MMTToolForHUDAccessibilityID` (MMTToolForHUD.swift).
 final class MMTToolForHUDContentView: UIView {
 
     // MARK: - Mode

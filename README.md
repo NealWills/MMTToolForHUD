@@ -35,8 +35,8 @@ fully customizable through a single `MMTToolForHUDConfig`.
 
 | Resource | Link |
 |---|---|
-| Latest performance report (tag 0.6.2) | [`perf-report-0.6.2.md`](PerformanceReports/perf-report-0.6.2.md) |
-| Latest performance report (machine-readable) | [`perf-report-0.6.2.json`](PerformanceReports/perf-report-0.6.2.json) |
+| Latest performance report (tag 0.6.3) | [`perf-report-0.6.3.md`](PerformanceReports/perf-report-0.6.3.md) |
+| Latest performance report (machine-readable) | [`perf-report-0.6.3.json`](PerformanceReports/perf-report-0.6.3.json) |
 | All performance reports (history) | [`PerformanceReports/`](PerformanceReports) |
 | Latest performance test run log | [`last-run.log`](PerformanceReports/last-run.log) |
 | Unit + performance test suite | [`Example/Tests/Tests.swift`](Example/Tests/Tests.swift) |
@@ -60,7 +60,7 @@ implementation.
 
 | File | Visibility | Contents |
 |---|---|---|
-| [`MMTToolForHUDAPI.swift`](MMTToolForHUD/Classes/MMTToolForHUDAPI.swift) | Public | `MMTToolForHUD`, `MMTToolForHUDToast`, `MMTToolForHUDConfig`, progress / toast style enums, accessibility IDs |
+| [`MMTToolForHUD.swift`](MMTToolForHUD/Classes/MMTToolForHUD.swift) | Public | `MMTToolForHUD`, `MMTToolForHUDToast`, `MMTToolForHUDConfig`, progress / toast style enums, accessibility IDs |
 | [`MMTToolForHUDPresenter.swift`](MMTToolForHUD/Classes/MMTToolForHUDPresenter.swift) | Internal | Per-window HUD presentation controller, threading helpers |
 | [`MMTToolForHUDToastManager.swift`](MMTToolForHUD/Classes/MMTToolForHUDToastManager.swift) | Internal | Toast stacking manager, container and item views |
 | [`MMTToolForHUDContainerView.swift`](MMTToolForHUD/Classes/MMTToolForHUDContainerView.swift) | Internal | Full-window HUD container, touch interception |
@@ -234,7 +234,7 @@ keyboard-heavy screens if that matters.
 
 | API | Description |
 |---|---|
-| `version` | Library version string (e.g. `"0.6.2"`), kept in sync with the podspec |
+| `version` | Library version string (e.g. `"0.6.3"`), kept in sync with the podspec |
 | `versionDescription` | Release notes: what changed in the current version since the previous release |
 | `showLoading(_:in:)` | Spinner with optional text |
 | `showProgress(_:text:style:in:)` | Bar or ring progress |
@@ -436,7 +436,7 @@ Automated benchmarks with budget assertions live in
 runs them and writes JSON + Markdown reports into
 [`PerformanceReports/`](PerformanceReports) (reports are committed to the
 repository as history — see the
-[latest report](PerformanceReports/perf-report-0.6.2.md)):
+[latest report](PerformanceReports/perf-report-0.6.3.md)):
 
 ```bash
 scripts/run-performance-tests.sh          # uses the booted simulator

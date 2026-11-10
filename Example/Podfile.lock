@@ -1,5 +1,5 @@
 PODS:
-  - MMTToolForHUD (0.6.2)
+  - MMTToolForHUD (0.6.3)
 
 DEPENDENCIES:
   - MMTToolForHUD (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MMTToolForHUD: f029e707149de38fbf7f1de56a1f1e631d65a2b3
+  MMTToolForHUD: fef2ffccb343a8f02dda8d6f0d90e5da807ca78e
 
 PODFILE CHECKSUM: b5c560726a3eabe36de6a8c72ec715990a74339f
 

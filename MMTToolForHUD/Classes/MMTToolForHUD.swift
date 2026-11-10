@@ -1,5 +1,5 @@
 //
-//  MMTToolForHUDAPI.swift
+//  MMTToolForHUD.swift
 //  MMTToolForHUD
 //
 //  Created by nealwills on 2026/11/10.
@@ -40,18 +40,17 @@ public final class MMTToolForHUD {
 
     // MARK: - Version
 
-    /// The current version of the MMTToolForHUD library (e.g. `"0.6.2"`),
+    /// The current version of the MMTToolForHUD library (e.g. `"0.6.3"`),
     /// kept in sync with the podspec.
-    public static let version = "0.6.2"
+    public static let version = "0.6.3"
 
     /// Release notes for the current version: what changed since the
     /// previous release. Kept in sync with the version's release commit.
     public static let versionDescription = """
-        Fixed multi-line text measurement for explicit newlines and \
-        word-wrapped text, sanitized NaN / infinite progress values, \
-        anchored the panel top edge so indicators never shift when text \
-        changes line count, and seeded indicator frames to remove the \
-        fly-in-from-corner transition when a loading HUD switches to progress.
+        Added the version and versionDescription APIs for querying the \
+        library version at runtime, consolidated the whole public API \
+        surface into a single file, and switched every default color to \
+        fixed RGB values so dark mode never changes HUD and toast colors.
         """
 
     // MARK: - Configuration

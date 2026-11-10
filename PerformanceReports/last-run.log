@@ -34,6 +34,26 @@ GatherProvisioningInputs
 
 CreateBuildDescription
 
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/nealwills/Developer/NLPod/MMTToolForHUD/Example/MMTToolForHUD/Images.xcassets
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/ibtool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x objective-c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool -V
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 20703bd51ebf192c3db0ec7be55f7565
+Build description path: /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Build/Intermediates.noindex/XCBuildData/20703bd51ebf192c3db0ec7be55f7565.xcbuilddata
 ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk /Users/nealwills/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F73-6cfe768891a92b912361537c460fe42b.sdkstatcache
     cd /Users/nealwills/Developer/NLPod/MMTToolForHUD/Example
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -o /Users/nealwills/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F73-6cfe768891a92b912361537c460fe42b.sdkstatcache
@@ -66,46 +86,48 @@ CopySwiftLibs /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD
     cd /Users/nealwills/Developer/NLPod/MMTToolForHUD/Example
     builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Build/Products/Debug-iphonesimulator/MMTToolForHUD_Example.app/PlugIns/MMTToolForHUD_Tests.xctest/MMTToolForHUD_Tests --scan-folder /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Build/Products/Debug-iphonesimulator/MMTToolForHUD_Example.app/PlugIns/MMTToolForHUD_Tests.xctest/Frameworks --scan-folder /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Build/Products/Debug-iphonesimulator/MMTToolForHUD_Example.app/PlugIns/MMTToolForHUD_Tests.xctest/PlugIns --scan-folder /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Build/Products/Debug-iphonesimulator/MMTToolForHUD_Example.app/PlugIns/MMTToolForHUD_Tests.xctest/SystemExtensions --scan-folder /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Build/Products/Debug-iphonesimulator/MMTToolForHUD_Example.app/PlugIns/MMTToolForHUD_Tests.xctest/Extensions --scan-folder /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Build/Products/Debug-iphonesimulator/Pods_MMTToolForHUD_Tests.framework --platform iphonesimulator --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Build/Products/Debug-iphonesimulator/MMTToolForHUD_Example.app/PlugIns/MMTToolForHUD_Tests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Build/Intermediates.noindex/MMTToolForHUD.build/Debug-iphonesimulator/MMTToolForHUD_Tests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os --back-deploy-swift-span
 
-Test Suite 'Selected tests' started at 2026-11-09 16:24:47.410.
-Test Suite 'MMTToolForHUD_Tests.xctest' started at 2026-11-09 16:24:47.411.
-Test Suite 'MMTToolForHUDPerformanceTests' started at 2026-11-09 16:24:47.411.
+2026-11-10 11:16:53.009509+0800 MMTToolForHUD_Example[11951:29176434] [General] Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+Test Suite 'Selected tests' started at 2026-11-10 11:16:53.131.
+Test Suite 'MMTToolForHUD_Tests.xctest' started at 2026-11-10 11:16:53.131.
+Test Suite 'MMTToolForHUDPerformanceTests' started at 2026-11-10 11:16:53.132.
 Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testPerformanceReport]' started.
 
 ===== MMTToolForHUD PERFORMANCE-BEGIN =====
 # MMTToolForHUD performance report
 
-Generated: 2026-11-09 16.24.48 · Device: arm64
+Generated: 2026-11-10 11.16.53 · Device: arm64
 
 | Benchmark | Iterations | Average | Max | Budget | Status |
 |---|---:|---:|---:|---:|---|
-| showLoading + layout + dismiss (per cycle) | 50 | 0.593ms | 0.936ms | 15.0ms | PASS |
-| updateProgress (per call) | 200 | 0.366ms | 0.814ms | 2.0ms | PASS |
-| preferredSize with long text (per call) | 500 | 0.050ms | 0.140ms | 1.0ms | PASS |
-| toast present + remove (per cycle) | 100 | 0.532ms | 0.755ms | 5.0ms | PASS |
+| showLoading + layout + dismiss (per cycle) | 50 | 0.591ms | 0.849ms | 15.0ms | PASS |
+| updateProgress (per call) | 200 | 0.381ms | 0.993ms | 2.0ms | PASS |
+| preferredSize with long text (per call) | 500 | 0.049ms | 0.113ms | 1.0ms | PASS |
+| toast present + remove (per cycle) | 100 | 0.524ms | 0.774ms | 5.0ms | PASS |
 
-Memory footprint delta after stress cycles: 3680 KB (informational, no budget).
+Memory footprint delta after stress cycles: 4097 KB (informational, no budget).
 ===== MMTToolForHUD PERFORMANCE-JSON =====
-{"benchmarks":[{"iterations":50,"averageMs":0.5929398536682129,"name":"showLoading + layout + dismiss (per cycle)","maxMs":0.9360313415527344,"budgetMs":15},{"iterations":200,"averageMs":0.36571502685546875,"name":"updateProgress (per call)","maxMs":0.8139610290527344,"budgetMs":2},{"iterations":500,"averageMs":0.04973006248474121,"name":"preferredSize with long text (per call)","maxMs":0.14007091522216797,"budgetMs":1},{"iterations":100,"averageMs":0.5321407318115234,"name":"toast present + remove (per cycle)","maxMs":0.7549524307250977,"budgetMs":5}],"memoryDeltaKb":3680,"generatedAt":"2026-11-09 16.24.48","device":"arm64"}
+{"generatedAt":"2026-11-10 11.16.53","benchmarks":[{"iterations":50,"averageMs":0.5907988548278809,"maxMs":0.8490085601806641,"budgetMs":15,"name":"showLoading + layout + dismiss (per cycle)"},{"iterations":200,"averageMs":0.3814047574996948,"maxMs":0.9930133819580078,"budgetMs":2,"name":"updateProgress (per call)"},{"iterations":500,"averageMs":0.04874992370605469,"maxMs":0.11301040649414062,"budgetMs":1,"name":"preferredSize with long text (per call)"},{"iterations":100,"averageMs":0.5236303806304932,"maxMs":0.7740259170532227,"budgetMs":5,"name":"toast present + remove (per cycle)"}],"memoryDeltaKb":4097,"device":"arm64"}
 ===== MMTToolForHUD PERFORMANCE-END =====
-Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testPerformanceReport]' passed (0.614 seconds).
+Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testPerformanceReport]' passed (0.715 seconds).
 Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' started.
-<unknown>:0: Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' measured [Time, seconds] average: 0.012, relative standard deviation: 59.307%, values: [0.002617, 0.003839, 0.005954, 0.007869, 0.009927, 0.012094, 0.014972, 0.018241, 0.021623, 0.025186], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
-Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' passed (0.405 seconds).
+2026-11-10 11:16:53.990176+0800 MMTToolForHUD_Example[11951:29176434] [General] Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+<unknown>:0: Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' measured [Time, seconds] average: 0.013, relative standard deviation: 63.172%, values: [0.002221, 0.004146, 0.005038, 0.007915, 0.010531, 0.012289, 0.017384, 0.019240, 0.024181, 0.027237], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
+Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testProgressUpdateBaseline]' passed (0.433 seconds).
 Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' started.
-<unknown>:0: Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' measured [Time, seconds] average: 0.002, relative standard deviation: 49.188%, values: [0.003015, 0.002034, 0.002104, 0.002496, 0.001256, 0.000911, 0.000876, 0.000869, 0.000855, 0.001017], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
-Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' passed (0.279 seconds).
-Test Suite 'MMTToolForHUDPerformanceTests' passed at 2026-11-09 16:24:48.711.
-	 Executed 3 tests, with 0 failures (0 unexpected) in 1.298 (1.300) seconds
-Test Suite 'MMTToolForHUD_Tests.xctest' passed at 2026-11-09 16:24:48.711.
-	 Executed 3 tests, with 0 failures (0 unexpected) in 1.298 (1.300) seconds
-Test Suite 'Selected tests' passed at 2026-11-09 16:24:48.711.
-	 Executed 3 tests, with 0 failures (0 unexpected) in 1.298 (1.301) seconds
-2026-11-09 16:24:48.994 xcodebuild[37300:26993145] [MT] IDETestOperationsObserverDebug: 3.971 elapsed -- Testing started completed.
-2026-11-09 16:24:48.994 xcodebuild[37300:26993145] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
-2026-11-09 16:24:48.994 xcodebuild[37300:26993145] [MT] IDETestOperationsObserverDebug: 3.971 sec, +3.971 sec -- end
+<unknown>:0: Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' measured [Time, seconds] average: 0.001, relative standard deviation: 121.761%, values: [0.005544, 0.000750, 0.000673, 0.000636, 0.000627, 0.000740, 0.000762, 0.000702, 0.000665, 0.000823], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
+Test Case '-[MMTToolForHUD_Tests.MMTToolForHUDPerformanceTests testShowDismissBaseline]' passed (0.280 seconds).
+Test Suite 'MMTToolForHUDPerformanceTests' passed at 2026-11-10 11:16:54.562.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 1.428 (1.430) seconds
+Test Suite 'MMTToolForHUD_Tests.xctest' passed at 2026-11-10 11:16:54.562.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 1.428 (1.431) seconds
+Test Suite 'Selected tests' passed at 2026-11-10 11:16:54.562.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 1.428 (1.432) seconds
+2026-11-10 11:16:54.870 xcodebuild[11752:29175524] [MT] IDETestOperationsObserverDebug: 6.670 elapsed -- Testing started completed.
+2026-11-10 11:16:54.870 xcodebuild[11752:29175524] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-11-10 11:16:54.871 xcodebuild[11752:29175524] [MT] IDETestOperationsObserverDebug: 6.670 sec, +6.670 sec -- end
 
 Test session results, code coverage, and logs:
-	/Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Logs/Test/Test-MMTToolForHUD-Example-2026.11.09_16-24-43-+0800.xcresult
+	/Users/nealwills/Library/Developer/Xcode/DerivedData/MMTToolForHUD-diwuuuzcnmjcvrfkdtfnahnjirnr/Logs/Test/Test-MMTToolForHUD-Example-2026.11.10_11-16-44-+0800.xcresult
 
 ** TEST SUCCEEDED **
 
