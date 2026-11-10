@@ -35,6 +35,8 @@ fully customizable through a single `MMTToolForHUDConfig`.
 
 | Resource | Link |
 |---|---|
+| Latest changelog (0.6.3) | [`Changelogs/0.6.3.md`](Changelogs/0.6.3.md) |
+| All changelogs (per version) | [`Changelogs/`](Changelogs) |
 | Latest performance report (tag 0.6.3) | [`perf-report-0.6.3.md`](PerformanceReports/perf-report-0.6.3.md) |
 | Latest performance report (machine-readable) | [`perf-report-0.6.3.json`](PerformanceReports/perf-report-0.6.3.json) |
 | All performance reports (history) | [`PerformanceReports/`](PerformanceReports) |
@@ -51,7 +53,10 @@ fully customizable through a single `MMTToolForHUDConfig`.
 Performance reports are committed to the repository. The filename carries
 the version tag (`perf-report-<version>.md/.json`) and every run replaces
 the report for its version, so each tag keeps exactly one final report
-under `PerformanceReports/`.
+under `PerformanceReports/`. Every release also adds
+`Changelogs/<version>.md` describing what changed since the previous
+version; keep it in sync with the release notes in
+`MMTToolForHUD.versionDescription`.
 
 ## Project layout
 
