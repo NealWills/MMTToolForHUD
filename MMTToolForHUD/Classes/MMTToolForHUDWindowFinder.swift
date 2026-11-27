@@ -5,7 +5,7 @@
 
 import UIKit
 
-/// Locates the window that should present the HUD / toast (iOS 13+ UIScene).
+/// Locates the window that should present the HUD / toast (iOS 15+ UIScene).
 enum MMTToolForHUDWindowFinder {
 
     /// Returns the best window to present on: prefers the key window of an
