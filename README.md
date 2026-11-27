@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/cocoapods/l/MMTToolForHUD.svg?style=flat)](https://cocoapods.org/pods/MMTToolForHUD)
 [![Platform](https://img.shields.io/cocoapods/p/MMTToolForHUD.svg?style=flat)](https://cocoapods.org/pods/MMTToolForHUD)
 
-A lightweight, thread-safe HUD library for iOS 15+ with **toast**, **loading**
+A lightweight, thread-safe HUD library for iOS 13+ with **toast**, **loading**
 and **progress** support. Zero third-party dependencies, built on UIScene,
 fully customizable through a single `MMTToolForHUDConfig`.
 
@@ -91,7 +91,7 @@ implementation.
 
 ## Requirements
 
-- iOS 15.0+
+- iOS 13.0+
 - Swift 5.0+
 
 ## Installation
