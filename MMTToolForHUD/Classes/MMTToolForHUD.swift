@@ -40,17 +40,16 @@ public final class MMTToolForHUD {
 
     // MARK: - Version
 
-    /// The current version of the MMTToolForHUD library (e.g. `"0.6.3"`),
+    /// The current version of the MMTToolForHUD library (e.g. `"0.6.4"`),
     /// kept in sync with the podspec.
-    public static let version = "0.6.3"
+    public static let version = "0.6.4"
 
     /// Release notes for the current version: what changed since the
     /// previous release. Kept in sync with the version's release commit.
     public static let versionDescription = """
-        Added the version and versionDescription APIs for querying the \
-        library version at runtime, consolidated the whole public API \
-        surface into a single file, and switched every default color to \
-        fixed RGB values so dark mode never changes HUD and toast colors.
+        Added configurable HUD and toast shadows, a demo for both shadow \
+        configurations, and complete Appium 4 plus WebdriverIO 10 coverage \
+        for every interactive demo control.
         """
 
     // MARK: - Configuration

@@ -42,7 +42,7 @@ final class MMTToolForHUDTests: XCTestCase {
                        UIColor(red: 52 / 255, green: 199 / 255, blue: 89 / 255, alpha: 1))
         XCTAssertEqual(config.errorIconColor,
                        UIColor(red: 1, green: 59 / 255, blue: 48 / 255, alpha: 1))
-        XCTAssertEqual(config.hudShadowOpacity, 0.22)
+        XCTAssertEqual(config.hudShadowOpacity, 0.35)
         XCTAssertEqual(config.hudShadowRadius, 10)
         XCTAssertEqual(config.hudShadowOffset, CGSize(width: 0, height: 4))
         XCTAssertEqual(config.toastShadowOpacity, 0.22)

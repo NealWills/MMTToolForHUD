@@ -35,10 +35,10 @@ fully customizable through a single `MMTToolForHUDConfig`.
 
 | Resource | Link |
 |---|---|
-| Latest changelog (0.6.3) | [`Changelogs/0.6.3.md`](Changelogs/0.6.3.md) |
+| Latest changelog (0.6.4) | [`Changelogs/0.6.4.md`](Changelogs/0.6.4.md) |
 | All changelogs (per version) | [`Changelogs/`](Changelogs) |
-| Latest performance report (tag 0.6.3) | [`perf-report-0.6.3.md`](PerformanceReports/perf-report-0.6.3.md) |
-| Latest performance report (machine-readable) | [`perf-report-0.6.3.json`](PerformanceReports/perf-report-0.6.3.json) |
+| Latest performance report (tag 0.6.4) | [`perf-report-0.6.4.md`](PerformanceReports/perf-report-0.6.4.md) |
+| Latest performance report (machine-readable) | [`perf-report-0.6.4.json`](PerformanceReports/perf-report-0.6.4.json) |
 | All performance reports (history) | [`PerformanceReports/`](PerformanceReports) |
 | Latest performance test run log | [`last-run.log`](PerformanceReports/last-run.log) |
 | Unit + performance test suite | [`Example/Tests/Tests.swift`](Example/Tests/Tests.swift) |
@@ -243,7 +243,7 @@ keyboard-heavy screens if that matters.
 
 | API | Description |
 |---|---|
-| `version` | Library version string (e.g. `"0.6.3"`), kept in sync with the podspec |
+| `version` | Library version string (e.g. `"0.6.4"`), kept in sync with the podspec |
 | `versionDescription` | Release notes: what changed in the current version since the previous release |
 | `showLoading(_:in:)` | Spinner with optional text |
 | `showProgress(_:text:style:in:)` | Bar or ring progress |
@@ -290,7 +290,7 @@ after the change.
 | `textColor` / `textFont` | Text appearance | white / 14pt medium |
 | `cornerRadius` | Panel corner radius | `16` |
 | `hudShadowColor` | Panel shadow color | black |
-| `hudShadowOpacity` | Panel shadow opacity | `0.22` |
+| `hudShadowOpacity` | Panel shadow opacity | `0.35` |
 | `hudShadowRadius` | Panel shadow blur radius | `10` |
 | `hudShadowOffset` | Panel shadow offset | `(0, 4)` |
 | `hudPadding` | Padding between panel edge and content | `16` |
@@ -430,7 +430,7 @@ Automated benchmarks with budget assertions live in
 runs them and writes JSON + Markdown reports into
 [`PerformanceReports/`](PerformanceReports) (reports are committed to the
 repository as history — see the
-[latest report](PerformanceReports/perf-report-0.6.3.md)):
+[latest report](PerformanceReports/perf-report-0.6.4.md)):
 
 ```bash
 scripts/run-performance-tests.sh          # uses the booted simulator
