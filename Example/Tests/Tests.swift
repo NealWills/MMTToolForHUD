@@ -42,6 +42,12 @@ final class MMTToolForHUDTests: XCTestCase {
                        UIColor(red: 52 / 255, green: 199 / 255, blue: 89 / 255, alpha: 1))
         XCTAssertEqual(config.errorIconColor,
                        UIColor(red: 1, green: 59 / 255, blue: 48 / 255, alpha: 1))
+        XCTAssertEqual(config.hudShadowOpacity, 0.22)
+        XCTAssertEqual(config.hudShadowRadius, 10)
+        XCTAssertEqual(config.hudShadowOffset, CGSize(width: 0, height: 4))
+        XCTAssertEqual(config.toastShadowOpacity, 0.22)
+        XCTAssertEqual(config.toastShadowRadius, 8)
+        XCTAssertEqual(config.toastShadowOffset, CGSize(width: 0, height: 3))
     }
 
     /// Every default color must be a fixed RGB value: resolving it in light
@@ -52,6 +58,7 @@ final class MMTToolForHUDTests: XCTestCase {
         let config = MMTToolForHUDConfig()
         let colors: [String: UIColor] = [
             "hudBackgroundColor": config.hudBackgroundColor,
+            "hudShadowColor": config.hudShadowColor,
             "tintColor": config.tintColor,
             "spinnerColor": config.spinnerColor,
             "successIconColor": config.successIconColor,
@@ -60,6 +67,7 @@ final class MMTToolForHUDTests: XCTestCase {
             "progressTrackColor": config.progressTrackColor,
             "toastBackgroundColor": config.toastBackgroundColor,
             "toastTextColor": config.toastTextColor,
+            "toastShadowColor": config.toastShadowColor,
         ]
         for (name, color) in colors {
             assertSameRGBInLightAndDark(color, name)
@@ -83,6 +91,44 @@ final class MMTToolForHUDTests: XCTestCase {
         MMTToolForHUDToast.config.toastDuration = 3.5
         defer { MMTToolForHUD.config.toastDuration = 2.0 }
         XCTAssertEqual(MMTToolForHUD.config.toastDuration, 3.5)
+    }
+
+    func testHUDShadowCanBeCustomized() {
+        var config = MMTToolForHUDConfig()
+        config.hudShadowColor = UIColor(red: 0.1, green: 0.2, blue: 0.3, alpha: 1)
+        config.hudShadowOpacity = 0.65
+        config.hudShadowRadius = 12
+        config.hudShadowOffset = CGSize(width: 2, height: 6)
+
+        let contentView = MMTToolForHUDContentView()
+        contentView.apply(config: config)
+
+        XCTAssertEqual(contentView.layer.shadowColor, config.hudShadowColor.cgColor)
+        XCTAssertEqual(contentView.layer.shadowOpacity, 0.65)
+        XCTAssertEqual(contentView.layer.shadowRadius, 12)
+        XCTAssertEqual(contentView.layer.shadowOffset, CGSize(width: 2, height: 6))
+        XCTAssertNotNil(contentView.layer.shadowPath)
+    }
+
+    func testToastShadowCanBeCustomized() {
+        var config = MMTToolForHUDConfig()
+        config.toastShadowColor = UIColor(red: 0.2, green: 0.3, blue: 0.4, alpha: 1)
+        config.toastShadowOpacity = 0.75
+        config.toastShadowRadius = 14
+        config.toastShadowOffset = CGSize(width: 3, height: 5)
+
+        let item = MMTToolForHUDToastItemView(
+            text: "Shadow",
+            icon: nil,
+            config: config,
+            maxWidth: 300
+        )
+
+        XCTAssertEqual(item.layer.shadowColor, config.toastShadowColor.cgColor)
+        XCTAssertEqual(item.layer.shadowOpacity, 0.75)
+        XCTAssertEqual(item.layer.shadowRadius, 14)
+        XCTAssertEqual(item.layer.shadowOffset, CGSize(width: 3, height: 5))
+        XCTAssertNotNil(item.layer.shadowPath)
     }
 
     // MARK: - Version

@@ -240,6 +240,10 @@ final class MMTToolForHUDToastItemView: UIView {
 
     private let label: UILabel
     private let cornerRadius: CGFloat
+    private let shadowColor: UIColor
+    private let shadowOpacity: Float
+    private let shadowRadius: CGFloat
+    private let shadowOffset: CGSize
 
     init(text: String, icon: (name: String, color: UIColor)?, config: MMTToolForHUDConfig, maxWidth: CGFloat) {
         let label = UILabel()
@@ -252,11 +256,21 @@ final class MMTToolForHUDToastItemView: UIView {
             - (icon == nil ? 0 : Self.iconSize + Self.iconSpacing), 40)
         self.label = label
         self.cornerRadius = config.toastCornerRadius
+        self.shadowColor = config.toastShadowColor
+        self.shadowOpacity = min(max(config.toastShadowOpacity, 0), 1)
+        self.shadowRadius = max(config.toastShadowRadius, 0)
+        self.shadowOffset = config.toastShadowOffset
 
         super.init(frame: .zero)
 
         backgroundColor = config.toastBackgroundColor
         layer.cornerCurve = .continuous
+        layer.masksToBounds = false
+        layer.shadowColor = shadowColor.cgColor
+        layer.shadowOpacity = shadowOpacity
+        layer.shadowRadius = shadowRadius
+        layer.shadowOffset = shadowOffset
+        updateShadowPath()
 
         // Accessibility identity for UI automation (XCUITest / Appium).
         isAccessibilityElement = true
@@ -302,5 +316,13 @@ final class MMTToolForHUDToastItemView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = cornerRadius
+        updateShadowPath()
+    }
+
+    private func updateShadowPath() {
+        layer.shadowPath = UIBezierPath(
+            roundedRect: bounds,
+            cornerRadius: cornerRadius
+        ).cgPath
     }
 }

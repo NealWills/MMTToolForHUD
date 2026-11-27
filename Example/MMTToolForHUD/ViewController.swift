@@ -96,6 +96,20 @@ class ViewController: UIViewController {
         addButton("Ring progress · simulated download", id: "demo.progress.ring") { self.simulateProgress(style: .ring) }
 
         addSection("Custom configuration", id: "demo.section.config")
+        addButton("Shadow · HUD and Toast", id: "demo.shadow.hud-toast") {
+            MMTToolForHUD.updateConfig {
+                $0.hudShadowColor = .black
+                $0.hudShadowOpacity = 0.45
+                $0.hudShadowRadius = 14
+                $0.hudShadowOffset = CGSize(width: 0, height: 5)
+                $0.toastShadowColor = .black
+                $0.toastShadowOpacity = 0.40
+                $0.toastShadowRadius = 12
+                $0.toastShadowOffset = CGSize(width: 0, height: 4)
+            }
+            MMTToolForHUD.showLoading("Custom shadow")
+            MMTToolForHUDToast.show("Toast shadow", duration: 4, position: .bottom)
+        }
         addButton("Colored spinner & status icons", id: "demo.config.colors") {
             MMTToolForHUD.updateConfig {
                 $0.spinnerColor = .systemOrange

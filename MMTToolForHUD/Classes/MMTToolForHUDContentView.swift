@@ -56,7 +56,7 @@ final class MMTToolForHUDContentView: UIView {
         super.init(frame: frame)
         backgroundColor = config.hudBackgroundColor
         layer.cornerRadius = config.cornerRadius
-        layer.masksToBounds = true
+        layer.masksToBounds = false
 
         spinner.hidesWhenStopped = false
         spinner.translatesAutoresizingMaskIntoConstraints = true
@@ -105,6 +105,11 @@ final class MMTToolForHUDContentView: UIView {
         spacing = config.hudTextSpacing
         backgroundColor = config.hudBackgroundColor
         layer.cornerRadius = config.cornerRadius
+        layer.shadowColor = config.hudShadowColor.cgColor
+        layer.shadowOpacity = min(max(config.hudShadowOpacity, 0), 1)
+        layer.shadowRadius = max(config.hudShadowRadius, 0)
+        layer.shadowOffset = config.hudShadowOffset
+        updateShadowPath()
         tintColor = config.tintColor
         spinner.color = config.spinnerColor
         textLabel.textColor = config.textColor
@@ -278,6 +283,14 @@ final class MMTToolForHUDContentView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         layoutContent()
+        updateShadowPath()
+    }
+
+    private func updateShadowPath() {
+        layer.shadowPath = UIBezierPath(
+            roundedRect: bounds,
+            cornerRadius: config.cornerRadius
+        ).cgPath
     }
 
     /// Positions the mode's indicator and text inside the current bounds.

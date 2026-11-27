@@ -168,6 +168,10 @@ MMTToolForHUD.updateConfig {
     $0.spinnerColor = .systemOrange
     $0.successIconColor = .systemGreen
     $0.errorIconColor = .systemRed
+    $0.hudShadowOpacity = 0.35
+    $0.hudShadowRadius = 12
+    $0.toastShadowOpacity = 0.30
+    $0.toastShadowRadius = 10
     $0.interactionStyle = .blockAll     // .blockHUD / .blockAll / .passThrough
     $0.toastDuration = 3
     $0.toastPosition = .top
@@ -285,6 +289,10 @@ after the change.
 | `hudBackgroundColor` | Panel background | near-black (0.06, 0.9) |
 | `textColor` / `textFont` | Text appearance | white / 14pt medium |
 | `cornerRadius` | Panel corner radius | `16` |
+| `hudShadowColor` | Panel shadow color | black |
+| `hudShadowOpacity` | Panel shadow opacity | `0.22` |
+| `hudShadowRadius` | Panel shadow blur radius | `10` |
+| `hudShadowOffset` | Panel shadow offset | `(0, 4)` |
 | `hudPadding` | Padding between panel edge and content | `16` |
 | `hudTextSpacing` | Gap between indicator and text | `6` |
 | `hudMargin` | Minimum distance to screen edges | `28` |
@@ -318,6 +326,10 @@ mode and are never swapped by the system.
 | `toastBackgroundColor` | Capsule background | near-black (0.06, 0.92) |
 | `toastTextColor` / `toastFont` | Text appearance | white / 14pt medium |
 | `toastCornerRadius` | Capsule corner radius | `8` |
+| `toastShadowColor` | Toast shadow color | black |
+| `toastShadowOpacity` | Toast shadow opacity | `0.22` |
+| `toastShadowRadius` | Toast shadow blur radius | `8` |
+| `toastShadowOffset` | Toast shadow offset | `(0, 3)` |
 | `toastDuration` | Default duration (seconds) | `2.0` |
 | `toastPosition` | Default position | `.bottom` |
 | `toastMargin` | Distance to the safe-area edges | `20` |
@@ -352,41 +364,16 @@ Example app controls use `MMTToolForHUD.demo.<section>.<name>`:
 | Loading | `…demo.loading.spinner` / `.text` / `.block-all` |
 | Status | `…demo.status.success` / `.error` |
 | Progress | `…demo.progress.bar` / `.ring` |
-| Config | `…demo.config.colors` |
+| Config | `…demo.config.colors` / `…demo.shadow.hud-toast` |
 | Headers | `…demo.section.toast` / `.loading` / `.status` / `.progress` / `.config` |
 
 ### Appium setup
 
-Appium (WebDriverIO) end-to-end tests live in [`Appium/`](Appium) using Appium 2 + WebDriverIO
-with the XCUITest driver — see the dedicated [`Appium/README.md`](Appium/README.md)
-for prerequisites, configuration and the coverage list:
-
-1. **Prerequisites**: Node 18+, Xcode with an iOS Simulator runtime, and the
-   example app built and installed:
-
-   ```bash
-   cd Example && pod install
-   xcodebuild -workspace MMTToolForHUD.xcworkspace -scheme MMTToolForHUD-Example \
-     -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build
-   xcrun simctl boot "iPhone 16 Pro"
-   APP=$(find ~/Library/Developer/Xcode/DerivedData/MMTToolForHUD-* \
-     -name MMTToolForHUD_Example.app -path "*Debug-iphonesimulator*" | head -1)
-   xcrun simctl install booted "$APP"
-   ```
-
-2. **Install the test stack** and start the server:
-
-   ```bash
-   cd Appium
-   npm install                 # installs appium, wdio and the xcuitest driver
-   npm run appium              # terminal 1: serve on http://127.0.0.1:4723
-   ```
-
-3. **Run the suite**:
-
-   ```bash
-   npm test                    # terminal 2
-   ```
+Appium end-to-end tests live in [`Appium/`](Appium) using Appium 4,
+WebdriverIO 10 and the XCUITest driver. WebdriverIO starts the local Appium
+server automatically. See [`Appium/README.md`](Appium/README.md) for the
+Node.js and Xcode requirements, app build steps, simulator selection and
+coverage list.
 
 ### Writing Appium tests
 
@@ -404,10 +391,12 @@ await bar.waitForDisplayed({ timeout: 5000 });
 await expect(bar).toHaveAttribute('label', '100%');   // percent readout
 ```
 
-The bundled spec (`Appium/specs/hud.spec.js`) covers toast show / stack /
-auto-dismiss, loading with text, success flash, and both progress styles
-end-to-end. Capabilities (device name, UDID, bundle id) are configured in
-[`Appium/wdio.conf.js`](Appium/wdio.conf.js).
+The bundled spec (`Appium/specs/hud.spec.js`) covers every demo control:
+all toast positions and icons, toast stacking and dismissal, spinner and text
+loading modes, block-all loading, success/error flashes, both progress styles,
+custom shadows/colors and version information. It captures a pass/fail
+screenshot for every test and writes JSON/Markdown reports. Capabilities are
+configured in [`Appium/wdio.conf.js`](Appium/wdio.conf.js).
 
 ## Example app
 

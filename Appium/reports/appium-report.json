@@ -1,0 +1,104 @@
+{
+  "library": "MMTToolForHUD",
+  "generatedAt": "2026-11-27T02:36:20.404Z",
+  "simulator": "iPhone 18 Pro",
+  "framework": "Appium 4 + WebDriverIO 10",
+  "tests": [
+    {
+      "name": "shows a bottom toast that auto-dismisses",
+      "status": "PASS",
+      "durationMs": 2442,
+      "screenshot": "shows-a-bottom-toast-that-auto-dismisses.png"
+    },
+    {
+      "name": "shows a top-position toast",
+      "status": "PASS",
+      "durationMs": 544,
+      "screenshot": "shows-a-top-position-toast.png"
+    },
+    {
+      "name": "shows a center-position toast",
+      "status": "PASS",
+      "durationMs": 544,
+      "screenshot": "shows-a-center-position-toast.png"
+    },
+    {
+      "name": "stacks success, error and info toasts",
+      "status": "PASS",
+      "durationMs": 652,
+      "screenshot": "stacks-success-error-and-info-toasts.png"
+    },
+    {
+      "name": "shows a wrapping long-text toast",
+      "status": "PASS",
+      "durationMs": 570,
+      "screenshot": "shows-a-wrapping-long-text-toast.png"
+    },
+    {
+      "name": "dismisses every visible toast",
+      "status": "PASS",
+      "durationMs": 1028,
+      "screenshot": "dismisses-every-visible-toast.png"
+    },
+    {
+      "name": "shows a spinner-only loading HUD and auto-dismisses it",
+      "status": "PASS",
+      "durationMs": 2386,
+      "screenshot": "shows-a-spinner-only-loading-hud-and-auto-dismisses-it.png"
+    },
+    {
+      "name": "shows loading HUD with text and auto-dismisses it",
+      "status": "PASS",
+      "durationMs": 2389,
+      "screenshot": "shows-loading-hud-with-text-and-auto-dismisses-it.png"
+    },
+    {
+      "name": "blocks the whole screen and restores HUD-only interception",
+      "status": "PASS",
+      "durationMs": 2689,
+      "screenshot": "blocks-the-whole-screen-and-restores-hud-only-interception.png"
+    },
+    {
+      "name": "shows the success status icon and auto-dismisses",
+      "status": "PASS",
+      "durationMs": 2015,
+      "screenshot": "shows-the-success-status-icon-and-auto-dismisses.png"
+    },
+    {
+      "name": "shows the error status icon and auto-dismisses",
+      "status": "PASS",
+      "durationMs": 1957,
+      "screenshot": "shows-the-error-status-icon-and-auto-dismisses.png"
+    },
+    {
+      "name": "runs bar progress to completion and shows a toast",
+      "status": "PASS",
+      "durationMs": 3168,
+      "screenshot": "runs-bar-progress-to-completion-and-shows-a-toast.png"
+    },
+    {
+      "name": "runs ring progress to completion",
+      "status": "PASS",
+      "durationMs": 4816,
+      "screenshot": "runs-ring-progress-to-completion.png"
+    },
+    {
+      "name": "shows configurable HUD and toast shadows",
+      "status": "PASS",
+      "durationMs": 2172,
+      "screenshot": "shows-configurable-hud-and-toast-shadows.png"
+    },
+    {
+      "name": "applies custom spinner and status icon colors in sequence",
+      "status": "PASS",
+      "durationMs": 5871,
+      "screenshot": "applies-custom-spinner-and-status-icon-colors-in-sequence.png"
+    },
+    {
+      "name": "shows version information from the floating info button",
+      "status": "PASS",
+      "durationMs": 824,
+      "screenshot": "shows-version-information-from-the-floating-info-button.png"
+    }
+  ]
+}

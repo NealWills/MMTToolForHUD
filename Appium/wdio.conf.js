@@ -1,28 +1,23 @@
-// WebdriverIO configuration for Appium tests against the MMTToolForHUD
-// example app running on an iOS simulator.
-//
-// Setup:
-//   1. npm install                      (in this directory)
-//   2. Build and install the example app:
-//        cd Example && pod install
-//        xcodebuild -workspace MMTToolForHUD.xcworkspace -scheme MMTToolForHUD-Example \
-//          -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build
-//        xcrun simctl install booted <path-to-derived-data>/MMTToolForHUD_Example.app
-//   3. Start Appium: npm run appium
-//   4. Run the suite: npm test
+const path = require('node:path');
+
+const deviceName = process.env.IOS_DEVICE_NAME || 'iPhone 18 Pro';
+const deviceUdid = process.env.IOS_UDID;
+const appPath = process.env.IOS_APP_PATH;
 
 exports.config = {
     runner: 'local',
+    hostname: '127.0.0.1',
+    port: 4723,
+    path: '/',
     specs: ['./specs/**/*.spec.js'],
     maxInstances: 1,
     capabilities: [{
         platformName: 'iOS',
         'appium:automationName': 'XCUITest',
-        // Use the already-installed example app.
         'appium:bundleId': 'org.cocoapods.demo.MMTToolForHUD-Example',
-        // Fill in your simulator name / UDID:
-        'appium:deviceName': 'iPhone 16 Pro',
-        // 'appium:udid': 'SIMULATOR-UDID',
+        'appium:deviceName': deviceName,
+        ...(deviceUdid ? { 'appium:udid': deviceUdid } : {}),
+        ...(appPath ? { 'appium:app': path.resolve(appPath) } : {}),
         'appium:newCommandTimeout': 120,
         'appium:wdaLaunchTimeout': 120000,
         'appium:showXcodeLog': false,
@@ -38,4 +33,12 @@ exports.config = {
         timeout: 60000,
     },
     reporters: ['spec'],
+    services: [['appium', {
+        args: { address: '127.0.0.1' },
+        appiumStartTimeout: 60000,
+    }]],
+    onPrepare: async function () {
+        const fs = await import('node:fs');
+        fs.mkdirSync('./reports/screenshots', { recursive: true });
+    },
 };

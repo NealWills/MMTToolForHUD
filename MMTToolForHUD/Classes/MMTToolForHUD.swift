@@ -303,6 +303,14 @@ public struct MMTToolForHUDConfig {
     public var interactionStyle = InteractionStyle.blockHUD
     /// Corner radius of the HUD panel.
     public var cornerRadius: CGFloat = 16
+    /// Color of the HUD panel shadow.
+    public var hudShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
+    /// Opacity of the HUD panel shadow.
+    public var hudShadowOpacity: Float = 0.35
+    /// Blur radius of the HUD panel shadow.
+    public var hudShadowRadius: CGFloat = 10
+    /// Offset of the HUD panel shadow.
+    public var hudShadowOffset: CGSize = CGSize(width: 0, height: 4)
     /// Padding between the HUD panel edge and its content.
     public var hudPadding: CGFloat = 16
     /// Vertical spacing between the HUD indicator and its text.
@@ -356,6 +364,14 @@ public struct MMTToolForHUDConfig {
     public var toastBackgroundColor = UIColor(red: 0.06, green: 0.06, blue: 0.06, alpha: 0.92)
     /// Toast corner radius.
     public var toastCornerRadius: CGFloat = 8
+    /// Color of the toast shadow.
+    public var toastShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
+    /// Opacity of the toast shadow.
+    public var toastShadowOpacity: Float = 0.22
+    /// Blur radius of the toast shadow.
+    public var toastShadowRadius: CGFloat = 8
+    /// Offset of the toast shadow.
+    public var toastShadowOffset: CGSize = CGSize(width: 0, height: 3)
     /// Toast text color.
     public var toastTextColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
     /// Toast text font.
